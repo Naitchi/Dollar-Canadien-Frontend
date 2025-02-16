@@ -1,0 +1,42 @@
+.overlay {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInUpSmooth 0.8s ease-out, fadeOutUpSmooth 0.8s ease-in 700ms forwards;
+  z-index: 10;
+}
+
+.lockEmoji {
+  font-size: 2rem;
+  transform: translateY(50px);
+  background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 50%;
+  padding: 0.5rem;
+}
+
+@keyframes fadeInUpSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOutUpSmooth {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}

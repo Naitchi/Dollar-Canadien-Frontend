@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "dollar-canadien",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,15 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
     "next": "15.0.3",
     "pusher-js": "^8.4.0-rc2",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.1.2",
+    "uuid": "^11.0.4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-redux": "^7.1.24",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "typescript": "^5"

@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.homeBtn {
+  background-color: #f9f9f9;
+  color: #ff0000;
+  border: 1px solid #ddd;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: fit-content;
+}
+
+.homeBtn:hover {
+  background-color: #e0e0e0;
+  color: #cc0000;
+}
+
+.gamePage {
+  min-height: 100vh;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+}

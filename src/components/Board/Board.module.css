@@ -1,0 +1,168 @@
+.Board {
+  margin-top: 100px;
+}
+
+.player {
+  padding: 10px 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  background-color: grey;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.player p {
+  margin: 5px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.dicesBox {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.activePlayer {
+  position: absolute;
+  top: -40px;
+  left: -15px;
+  padding: 10px 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  background-color: grey;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.activePlayer p {
+  margin: 5px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.dicesContainer {
+  width: 90%;
+
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.dicesLaunched {
+  padding: 20px;
+  background-color: #589248;
+  margin-right: 10px;
+  border-radius: 10px;
+  width: 45%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.dicesLocked {
+  padding: 20px;
+  background-color: #5c4040;
+  border-radius: 10px;
+  width: 45%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.dices {
+  height: 100px;
+
+  display: flex;
+  align-items: center;
+}
+
+.dice {
+  font-size: 3rem;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  border: none;
+  margin-right: 10px;
+  background-color: whitesmoke;
+  color: black;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-bottom 0.2s ease;
+}
+
+.diceSelected {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-bottom: 3px solid #ff0000;
+}
+
+.heart {
+  color: pink;
+}
+
+.rollButton,
+.lockButton {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  margin: 10px 0 0 0;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+}
+
+.rollButton {
+  background-color: #007bff;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+.rollButton:hover {
+  background-color: #0056b3;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
+}
+
+.lockButton {
+  background-color: #28a745;
+  box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
+}
+
+.lockButton:hover {
+  background-color: #1e7e34;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
+}
+
+.rollButton:active,
+.lockButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
