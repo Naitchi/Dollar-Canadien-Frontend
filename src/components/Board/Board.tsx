@@ -164,4 +164,6 @@ const Board = () => {
   );
 };
 
+// TODO intergrer la nouvelle animation de lock de des
+
 export default Board;
