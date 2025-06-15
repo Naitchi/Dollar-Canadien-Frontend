@@ -1,5 +1,4 @@
-/* TODO mettre ca en position absolue au milieu histoire d'etre sur de rien KC  */
-
+/* TODO jai un bug quand jai l'animation -> jai la barre de scroll horizontal qui apparait */
 .block {
   position: absolute;
   top: 0;

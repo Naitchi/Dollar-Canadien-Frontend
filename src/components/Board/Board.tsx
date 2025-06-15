@@ -17,6 +17,7 @@ import { selectActivePlayer } from '@/store/slices/gameSlice';
 
 // Components
 import DiceLockAnimation from '../DiceLockAnimation/DiceLockAnimation';
+import DicesResultsAnimation from '../DicesResultsAnimation/DicesResultsAnimation';
 
 interface State {
   step: step;
@@ -59,27 +60,39 @@ const Board = () => {
     if (!id || !user || selectedDices.length === 0) return;
     // TODO faire pour tout pour etre sur que le back nous retourne pas une erreur (dans le sens ou l'animation doit etre une "validation" que ç'a bien marché normalement IKEK)
     // TODO genre la actuellement ça serai de check si c'est bien un tableau de chiffre et en fonction des chiffres qu'on nous donne que ça soit dedans
+    // je comprends pas mes anciens TODOs IKEK
 
     setState((state) => ({ ...state, step: step.lockAnimation }));
 
     setTimeout(() => {
-      lockDices(user, id, selectedDices);
-      setSelectedDices([]);
-
-      // TODO en gros on check peut-etre pas sur le bon si ça passe au joueur suivant on est baisé
-      // TODO il faudrait s'assurer que les résultats du tour s'affichent bien avant de passé au joueur suivant en mode après l'animation un service pour changer le joueur actif/lui donner ses dés imo
-      if (activePlayer?.lockedDices?.length === 6)
+      if (
+        activePlayer?.lockedDices?.length
+          ? activePlayer?.lockedDices?.length + selectedDices.length === 6
+          : selectedDices.length === 6
+      ) {
         setState((state) => ({
           ...state,
           step: step.scoreAdditionAnimation,
         }));
-      else
+        setTimeout(() => {
+          lockDices(user, id, selectedDices);
+          setSelectedDices([]);
+        }, 7000); // TODO revoir cette valeur
+      } else {
         setState((state) => ({
           ...state,
           step: step.none,
         }));
-    }, 1400);
+
+        lockDices(user, id, selectedDices);
+        setSelectedDices([]);
+      }
+    }, 1400); // TODO revoir cette valeur (un peu long)
   };
+
+  // TODO faire pour que le joueur mort soit en bas de la liste
+  // TODO faire que le joueur mort puisse pas jouer ikek
+  // TODO faire que si qu'un joueur est vivant, il gagne
 
   return (
     <div className={styles.Board}>
@@ -91,7 +104,7 @@ const Board = () => {
             {activePlayer?.hp} <span className={styles.heart}>❤</span>
           </p>
         </div>
-        {/** TODO remplacer ces buttons par des dés 3d avec Three.js et si possible avec une animation quand ils arrivent */}
+        {/** TODO remplacer ces buttons par des dés 3d avec Three.js et si possible avec une animation quand ils arrivent comme google mais avec des vrais points de des*/}
         <div className={styles.dicesContainer}>
           <div className={styles.dicesLaunched}>
             <p>Dés lancés: </p>
@@ -100,6 +113,7 @@ const Board = () => {
                 activePlayer?.dices?.map((data, index) => {
                   return (
                     <button
+                      // TODO mettre un truc pour que ça soit pas cliquable si le joueur n'est pas celui qui joue
                       className={`${styles.dice} ${
                         selectedDices.includes(index) ? styles.diceSelected : ''
                       }`}
@@ -146,7 +160,7 @@ const Board = () => {
         )}
       </div>
       <div>
-        {/* TODO mettre les mecs morts à la fin (le faire dans le back ?) et avec une class différente */}
+        {/* TODO mettre les mecs morts à la fin (le faire dans le back ?) et avec une class différente (genre en bas ? je me comprends pas)*/}
         {lobby?.players?.map((player, index) => {
           if (player.index === activePlayer?.index) return;
           return (
@@ -160,10 +174,21 @@ const Board = () => {
           );
         })}
       </div>
+      {state.step === step.scoreAdditionAnimation && (
+        <DicesResultsAnimation
+          dices={
+            (activePlayer?.lockedDices?.length ?? 0) + selectedDices.length === 6
+              ? [
+                  ...(activePlayer?.lockedDices ?? []),
+                  ...selectedDices.map((i) => activePlayer?.dices?.[i] ?? 0),
+                ]
+              : []
+          }
+          onAnimationEnd={() => setState((state) => ({ ...state, step: step.none }))}
+        />
+      )}
     </div>
   );
 };
-
-// TODO intergrer la nouvelle animation de lock de des
 
 export default Board;

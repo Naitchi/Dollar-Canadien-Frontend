@@ -13,16 +13,21 @@ export enum step {
   step6 = 6, // slide du bandeau rouge
 }
 
+// TODO recuperer les des du joueur actif via le store dans le composant (pas important pour l'instant (en vrai un peu vu que la c'est degueux dans board))
+// TODO remplacer les nombres par des vrais des (three.js si possible)
+
 interface DicesResultsAnimation {
   dices: number[];
+  onAnimationEnd: () => void;
 }
 
-const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices }) => {
+const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices, onAnimationEnd }) => {
   const [animationStep, setAnimationStep] = useState<step>(step.none);
 
   const total = dices[0] + dices[1] + dices[2] + dices[3] + dices[4] + dices[5];
 
   useEffect(() => {
+    // TODO revoir les timings
     const timeouts = [
       setTimeout(() => setAnimationStep(step.step1), 500),
       setTimeout(() => setAnimationStep(step.step2), 2000),
@@ -30,13 +35,13 @@ const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices }) => {
       setTimeout(() => setAnimationStep(step.step4), 3700),
       setTimeout(() => setAnimationStep(step.step5), 4000),
       setTimeout(() => setAnimationStep(step.step6), 5000),
-      setTimeout(() => setAnimationStep(step.step6), 5000), // TODO renvoyer une step dans le store pour dire que l'animation est fini
+      setTimeout(() => onAnimationEnd(), 6000),
     ];
 
     return () => {
       timeouts.forEach(clearTimeout);
     };
-  }, []);
+  }, [onAnimationEnd]);
 
   return (
     <div className={styles.block}>
