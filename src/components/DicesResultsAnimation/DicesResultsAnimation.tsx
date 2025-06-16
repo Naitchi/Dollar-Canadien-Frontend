@@ -15,6 +15,7 @@ export enum step {
 
 // TODO recuperer les des du joueur actif via le store dans le composant (pas important pour l'instant (en vrai un peu vu que la c'est degueux dans board))
 // TODO remplacer les nombres par des vrais des (three.js si possible)
+// TODO adapter les animations pour qu'on puisse les utiliser dans les resultats d'attaque
 
 interface DicesResultsAnimation {
   dices: number[];

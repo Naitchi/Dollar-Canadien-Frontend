@@ -11,16 +11,19 @@ import Board from '@/components/Board/Board';
 import Lobby from '@/components/Lobby/Lobby';
 import { getALobby } from '@/services/services';
 import { RootState } from '@/store/store';
-import { Game, Player } from '@/types/gameType';
+import { Game, Player, step } from '@/types/gameType';
 
 // Styles
 import styles from '../styles/game.module.css';
+import Results from '@/components/Results/Results';
 
 export default function GamePage() {
   const dispatch = useDispatch();
   const router = useRouter();
   const id = router.query.id;
   const lobby = useSelector((state: RootState) => state.game.game);
+
+  // TODO mettre le boutton de lancement en gris si tout les joueurs ne sont pas prêts
 
   useEffect(() => {
     const fetchLobby = async () => {
@@ -29,7 +32,6 @@ export default function GamePage() {
           console.error("Problème avec l'idRoom", id);
           return;
         }
-
         try {
           const game = await getALobby(id);
           if (game) {
@@ -65,7 +67,8 @@ export default function GamePage() {
       </Link>
       {/* TODO faire un mode "multi local" pour quand les gens jouent en soirée en mode jeu d'alcool */}
       {!lobby?.actif && <Lobby />}
-      {lobby?.actif && <Board />}
+      {lobby?.actif && lobby.step !== step.gameEnd && <Board />}
+      {lobby?.actif && lobby.step === step.gameEnd && <Results />}
     </div>
   );
 }

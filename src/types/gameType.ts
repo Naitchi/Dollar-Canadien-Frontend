@@ -11,12 +11,13 @@ export interface Player {
 
 export interface Game {
   _id: string;
+  private: boolean;
   host: {
     id: string;
     username: string;
   };
-  private: boolean;
   actif: string | null;
+  step: step;
   players: Player[];
 }
 

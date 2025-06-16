@@ -64,6 +64,8 @@ const Board = () => {
 
     setState((state) => ({ ...state, step: step.lockAnimation }));
 
+    // TODO y'a que le joueur actif qui voit cette animation donc pourquoi pas faire un push dans le back pour que tous les joueurs voient l'animation ?
+
     setTimeout(() => {
       if (
         activePlayer?.lockedDices?.length
@@ -93,6 +95,7 @@ const Board = () => {
   // TODO faire pour que le joueur mort soit en bas de la liste
   // TODO faire que le joueur mort puisse pas jouer ikek
   // TODO faire que si qu'un joueur est vivant, il gagne
+  // TODO faire des animations de perte d'hp
 
   return (
     <div className={styles.Board}>
