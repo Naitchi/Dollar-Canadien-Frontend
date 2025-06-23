@@ -40,6 +40,9 @@ const Lobby = () => {
 
   const lobby = useSelector((state: RootState) => state.game.game);
 
+  // TODO faire un input en mode le label : Enjeu: (un select) "le premier perdant"| "les perdants" | "le gagant", devera `l'input`
+  // et ensuite on l'affiche a la fin avec les noms a la place de "le premier perdant" etc.
+
   // useEffects
   useEffect(() => {
     // TODO on pourrait faire un loading la pendant qu'on cherche le username dans le localStorage et avant d'afficher le salon/la modal un fois qu'on a la réponse/les données des autres joueurs
