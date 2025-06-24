@@ -18,6 +18,7 @@ import { selectActivePlayer } from '@/store/slices/gameSlice';
 // Components
 import DiceLockAnimation from '../DiceLockAnimation/DiceLockAnimation';
 import DicesResultsAnimation from '../DicesResultsAnimation/DicesResultsAnimation';
+import PlayerComponent from '../Player/Player';
 
 const Board = () => {
   const [selectedDices, setSelectedDices] = useState<number[]>([]);
@@ -46,11 +47,11 @@ const Board = () => {
    */
   const lockSelectedDices = (): void => {
     if (!id || !user || selectedDices.length === 0) return;
-    // TODO faire pour tout pour etre sur que le back nous retourne pas une erreur (dans le sens ou l'animation doit etre une "validation" que ç'a bien marché normalement IKEK)
+    // TODO faire tout pour etre sur que le back nous retourne pas une erreur (dans le sens ou l'animation doit etre une "validation" que ç'a bien marché normalement IKEK)
     // TODO genre la actuellement ça serai de check si c'est bien un tableau de chiffre et en fonction des chiffres qu'on nous donne que ça soit dedans
     // je comprends pas mes anciens TODOs IKEK
 
-    // TODO les gens on pas celle la
+    // TODO BUG les gens on pas celle la (je crois que c'est parce que le back nous envoie pas les dés qu'on a lock)
     changeGameStep(id, step.lockAnimation);
 
     setTimeout(() => {
@@ -65,7 +66,6 @@ const Board = () => {
           setSelectedDices([]);
         }, 7000); // TODO revoir cette valeur
       } else {
-        changeGameStep(id, step.none);
         lockDices(user, id, selectedDices);
         setSelectedDices([]);
       }
@@ -87,7 +87,7 @@ const Board = () => {
             {activePlayer?.hp} <span className={styles.heart}>❤</span>
           </p>
         </div>
-        {/** TODO remplacer ces buttons par des dés 3d avec Three.js et si possible avec une animation quand ils arrivent comme google mais avec des vrais points de des*/}
+        {/** TODO remplacer ces buttons par des dés 3d avec Three.js et si possible avec une animation quand ils arrivent comme google mais avec des vrais points de des et faire quils aient des placement aleatoire comme sur un vrai jeu de des*/}
         <div className={styles.dicesContainer}>
           <div className={styles.dicesLaunched}>
             <p>Dés lancés: </p>
@@ -145,19 +145,10 @@ const Board = () => {
           </button>
         )}
       </div>
-      <div>
-        {/* TODO mettre les mecs morts à la fin (le faire dans le back ?) et avec une class différente (genre en bas ? je me comprends pas)*/}
+      <div className={styles.playersBox}>
         {lobby?.players?.map((player, index) => {
           if (player.index === activePlayer?.index) return;
-          return (
-            <div className={styles.player} key={`${player.username}-${index}`}>
-              <p>🙍‍♂️</p>
-              <p>{player.username}</p>
-              <p>
-                {player.hp} <span className={styles.heart}>❤</span>
-              </p>
-            </div>
-          );
+          return <PlayerComponent key={index} player={player} />;
         })}
       </div>
       {lobby?.step === step.scoreAdditionAnimation && (

@@ -1,6 +1,7 @@
 /* TODO jai un bug quand jai l'animation -> jai la barre de scroll horizontal qui apparait */
 .block {
   position: absolute;
+  z-index: 1;
   top: 0;
   left: 0;
   display: flex;

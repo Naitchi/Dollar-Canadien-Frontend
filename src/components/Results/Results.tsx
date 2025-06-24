@@ -16,13 +16,12 @@ const Results = () => {
   useEffect(() => {
     if (!lobby) return;
     const getWinner = (game: Game) => {
-      const activeId = game.actif;
-      setWinner(game.players.filter((player) => player._id == activeId)[0]);
+      const winner = game.players.filter((player) => player.hp < 0)[0];
+      if (winner) setWinner(winner);
+      else console.error('No winner found');
     };
     getWinner(lobby);
   }, [lobby]);
-
-  // TODO pour l'instant si un mec meurt de lui meme et quil reste un joueur alore l'autre devra jouer avant de gagner :(
 
   return (
     <div className={styles.Results}>

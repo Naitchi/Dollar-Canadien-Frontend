@@ -163,6 +163,7 @@ const Lobby = () => {
         {/* TODO faire un bouton pour le host pour exclure */}
       </div>
       {/*TODO Rajouter un bouton/condition la qui dépends de si t'es l'host t'as startgame et sinon t'as un bouton ready (je préfère cette idée à l'actuelle)*/}
+      {/** Ou un "en attente de l'hote" a la place du startgame si t'es pas l'host*/}
       {<button onClick={startGame}>Start Game</button>}
     </div>
   );
