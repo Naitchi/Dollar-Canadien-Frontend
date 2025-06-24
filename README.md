@@ -17,3 +17,4 @@ bun dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 TODO pour le responsive faire une securite pour s'assurer qu il soit toujours en format paysage
+TODO faire une animation de changement de tour

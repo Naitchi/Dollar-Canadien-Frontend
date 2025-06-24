@@ -49,7 +49,7 @@ export default function Index() {
     setState((state) => ({ ...state, private: boolean }));
   };
 
-  // TODO c'est plus bon ça c''est user :{ username, id} mnt mais ça va surement sauté avec le mise en modal
+  // TODO c'est plus bon ça c'est user :{ username, id} mnt mais ça va surement sauté avec le mise en modal
   const usernameChange = (username: string): void => {
     setState({ ...state, user: { ...state.user, username: username } });
   };
@@ -92,7 +92,6 @@ export default function Index() {
     // TODO faire un div à coté comme on fait dans le board avec une icone d'utilisateur et le pseudo
     <div className={styles.container}>
       <h1 className={styles.title}>Dollar Canadien 🍁</h1>
-      {/** TODO le remettre en modal */}
       <Modal isOpen={state.showRenameModal} isClosable={false} onClose={toggleRenameModal}>
         <div className={styles.modalContent}>
           <label htmlFor="username" className={styles.label}>

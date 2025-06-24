@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 // Service
-import { lockDices } from '@/services/services';
+import { changeGameStep, endTurn, lockDices } from '@/services/services';
 
 // Styles
 import styles from './Board.module.css';
@@ -19,13 +19,8 @@ import { selectActivePlayer } from '@/store/slices/gameSlice';
 import DiceLockAnimation from '../DiceLockAnimation/DiceLockAnimation';
 import DicesResultsAnimation from '../DicesResultsAnimation/DicesResultsAnimation';
 
-interface State {
-  step: step;
-}
-
 const Board = () => {
   const [selectedDices, setSelectedDices] = useState<number[]>([]);
-  const [state, setState] = useState<State>({ step: step.none });
 
   const user = useSelector((state: RootState) => getUser(state));
   const id = useSelector((state: RootState) => state.game.game?._id);
@@ -47,13 +42,6 @@ const Board = () => {
   };
 
   /**
-   * Updates the application state to transition to the dice display step.
-   */
-  const launchDices = (): void => {
-    setState((state) => ({ ...state, step: step.dices }));
-  };
-
-  /**
    * Locks the selected dices for the current user by sending a request to the backend service.
    */
   const lockSelectedDices = (): void => {
@@ -62,9 +50,8 @@ const Board = () => {
     // TODO genre la actuellement ça serai de check si c'est bien un tableau de chiffre et en fonction des chiffres qu'on nous donne que ça soit dedans
     // je comprends pas mes anciens TODOs IKEK
 
-    setState((state) => ({ ...state, step: step.lockAnimation }));
-
-    // TODO y'a que le joueur actif qui voit cette animation donc pourquoi pas faire un push dans le back pour que tous les joueurs voient l'animation ?
+    // TODO les gens on pas celle la
+    changeGameStep(id, step.lockAnimation);
 
     setTimeout(() => {
       if (
@@ -72,20 +59,13 @@ const Board = () => {
           ? activePlayer?.lockedDices?.length + selectedDices.length === 6
           : selectedDices.length === 6
       ) {
-        setState((state) => ({
-          ...state,
-          step: step.scoreAdditionAnimation,
-        }));
+        lockDices(user, id, selectedDices);
         setTimeout(() => {
-          lockDices(user, id, selectedDices);
+          endTurn(user, id);
           setSelectedDices([]);
         }, 7000); // TODO revoir cette valeur
       } else {
-        setState((state) => ({
-          ...state,
-          step: step.none,
-        }));
-
+        changeGameStep(id, step.none);
         lockDices(user, id, selectedDices);
         setSelectedDices([]);
       }
@@ -112,7 +92,7 @@ const Board = () => {
           <div className={styles.dicesLaunched}>
             <p>Dés lancés: </p>
             <div className={styles.dices}>
-              {(state.step === step.dices || state.step === step.lockAnimation) &&
+              {(lobby?.step === step.dices || lobby?.step === step.lockAnimation) &&
                 activePlayer?.dices?.map((data, index) => {
                   return (
                     <button
@@ -125,7 +105,7 @@ const Board = () => {
                     >
                       {data}
                       <DiceLockAnimation
-                        show={selectedDices.includes(index) && state.step === step.lockAnimation}
+                        show={selectedDices.includes(index) && lobby?.step === step.lockAnimation}
                       />
                     </button>
                   );
@@ -145,15 +125,18 @@ const Board = () => {
             </div>
           </div>
         </div>
-        {state.step === step.none && user?.username === activePlayer?.username && (
+        {lobby?.step === step.none && user?.username === activePlayer?.username && (
           <button
             className={styles.rollButton}
-            /**disabled={player._id !== state.user.id}*/ onClick={launchDices}
+            /**disabled={player._id !== state.user.id}*/
+            onClick={() => {
+              if (id) changeGameStep(id, step.dices);
+            }}
           >
             Roll the dices 🎲
           </button>
         )}
-        {state.step === step.dices && user?.username === activePlayer?.username && (
+        {lobby?.step === step.dices && user?.username === activePlayer?.username && (
           <button
             className={styles.lockButton}
             /**disabled={player._id !== state.user.id}*/ onClick={lockSelectedDices}
@@ -177,17 +160,12 @@ const Board = () => {
           );
         })}
       </div>
-      {state.step === step.scoreAdditionAnimation && (
+      {lobby?.step === step.scoreAdditionAnimation && (
         <DicesResultsAnimation
-          dices={
-            (activePlayer?.lockedDices?.length ?? 0) + selectedDices.length === 6
-              ? [
-                  ...(activePlayer?.lockedDices ?? []),
-                  ...selectedDices.map((i) => activePlayer?.dices?.[i] ?? 0),
-                ]
-              : []
-          }
-          onAnimationEnd={() => setState((state) => ({ ...state, step: step.none }))}
+          dices={activePlayer?.lockedDices?.length === 6 ? activePlayer?.lockedDices : []}
+          onAnimationEnd={() => {
+            if (id) changeGameStep(id, step.none);
+          }}
         />
       )}
     </div>

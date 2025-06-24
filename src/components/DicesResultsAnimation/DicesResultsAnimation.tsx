@@ -15,7 +15,7 @@ export enum step {
 
 // TODO recuperer les des du joueur actif via le store dans le composant (pas important pour l'instant (en vrai un peu vu que la c'est degueux dans board))
 // TODO remplacer les nombres par des vrais des (three.js si possible)
-// TODO adapter les animations pour qu'on puisse les utiliser dans les resultats d'attaque
+// TODO adapter le composant pour qu'on puisse les utiliser dans les resultats d'attaque aussi
 
 interface DicesResultsAnimation {
   dices: number[];
@@ -28,7 +28,6 @@ const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices, onAnima
   const total = dices[0] + dices[1] + dices[2] + dices[3] + dices[4] + dices[5];
 
   useEffect(() => {
-    // TODO revoir les timings
     const timeouts = [
       setTimeout(() => setAnimationStep(step.step1), 500),
       setTimeout(() => setAnimationStep(step.step2), 2000),
@@ -57,7 +56,7 @@ const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices, onAnima
             <div className={`${styles.crown}`}>
               👑
               {/* TODO ameliorer avec plus de mouvements a l'aterrisage 
-              idee : la faire tomber droite mais elle atterie sur le cote du coup elle fini penche */}
+              idee : la faire tomber droite mais elle atterie sur le cote du coup elle fini penche + pas centrer atm responsive */}
             </div>
           )}
         </div>

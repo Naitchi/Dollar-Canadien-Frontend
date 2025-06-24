@@ -1,4 +1,4 @@
-import { Game, User } from '@/types/gameType';
+import { Game, step, User } from '@/types/gameType';
 
 const link = 'http://localhost:3001';
 
@@ -82,6 +82,32 @@ export const lockDices = (user: User, id: string, selectedDices: number[]): void
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ user, id, lockedDices: selectedDices }),
+    keepalive: true, // important
+  });
+};
+
+export const endTurn = (user: User, id: string): void => {
+  console.log('in endTurn');
+
+  fetch(`${link}/api/endTurn`, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ user, id }),
+    keepalive: true, // important
+  });
+};
+
+export const changeGameStep = (id: string, step: step): void => {
+  console.log('in changeGameStep');
+
+  fetch(`${link}/api/changeGameStep`, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id, step: step }),
     keepalive: true, // important
   });
 };

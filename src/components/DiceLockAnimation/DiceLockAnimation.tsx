@@ -6,6 +6,8 @@ interface DiceLockAnimationProps {
   show: boolean;
 }
 
+// TODO refaire l'animation pour que le U inverse se lock et pas juste un emoji
+
 const DiceLockAnimation: React.FC<DiceLockAnimationProps> = ({ show }) => {
   if (!show) return null;
 
