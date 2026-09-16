@@ -16,12 +16,14 @@ import { getUser } from '@/store/slices/clientSlice';
 import { selectActivePlayer } from '@/store/slices/gameSlice';
 
 // Components
+import AttackAnimation from '../AttackAnimation/AttackAnimation';
 import DiceLockAnimation from '../DiceLockAnimation/DiceLockAnimation';
 import DicesResultsAnimation from '../DicesResultsAnimation/DicesResultsAnimation';
 import PlayerComponent from '../Player/Player';
 
 const Board = () => {
   const [selectedDices, setSelectedDices] = useState<number[]>([]);
+  const [showAttackAnimation, setShowAttackAnimation] = useState(false);
 
   const user = useSelector((state: RootState) => getUser(state));
   const id = useSelector((state: RootState) => state.game.game?._id);
@@ -51,26 +53,38 @@ const Board = () => {
     // TODO genre la actuellement ça serai de check si c'est bien un tableau de chiffre et en fonction des chiffres qu'on nous donne que ça soit dedans
     // je comprends pas mes anciens TODOs IKEK
 
-    // TODO BUG les gens on pas celle la (je crois que c'est parce que le back nous envoie pas les dés qu'on a lock)
     changeGameStep(id, step.lockAnimation);
 
+    // Whether this is the 6th/final lock (score/attack resolution vs. just
+    // rerolling) is entirely determined server-side (game.step becomes
+    // 'scoreAdditionAnimation' vs 'none'). Passing the turn to the next
+    // player is triggered once the resulting animation sequence actually
+    // finishes playing (see handleScoreAnimationEnd/handleAttackAnimationEnd
+    // below) rather than a fixed timer, so it can't fire before or after the
+    // animations the player is actually watching.
     setTimeout(() => {
-      if (
-        activePlayer?.lockedDices?.length
-          ? activePlayer?.lockedDices?.length + selectedDices.length === 6
-          : selectedDices.length === 6
-      ) {
-        lockDices(user, id, selectedDices);
-        setTimeout(() => {
-          endTurn(user, id);
-          setSelectedDices([]);
-        }, 7000); // TODO revoir cette valeur
-      } else {
-        lockDices(user, id, selectedDices);
-        setSelectedDices([]);
-      }
+      lockDices(user, id, selectedDices);
+      setSelectedDices([]);
     }, 1400); // TODO revoir cette valeur (un peu long)
   };
+
+  // Called once the score-sum animation (DicesResultsAnimation) finishes.
+  // If this lock resolved into an attack, show that sequence next before
+  // passing the turn; otherwise (a plain HP loss) the turn is over already.
+  const handleScoreAnimationEnd = (): void => {
+    if (activePlayer?.attackDices && activePlayer.attackDices.length > 0) {
+      setShowAttackAnimation(true);
+    } else if (user && id) {
+      endTurn(user, id);
+    }
+  };
+
+  const handleAttackAnimationEnd = (): void => {
+    setShowAttackAnimation(false);
+    if (user && id) endTurn(user, id);
+  };
+
+  const attackNumber = (activePlayer?.lockedDices?.reduce((sum, value) => sum + value, 0) ?? 0) - 30;
 
   // TODO faire pour que le joueur mort soit en bas de la liste
   // TODO faire que le joueur mort puisse pas jouer ikek
@@ -90,17 +104,19 @@ const Board = () => {
         {/** TODO remplacer ces buttons par des dés 3d avec Three.js et si possible avec une animation quand ils arrivent comme google mais avec des vrais points de des et faire quils aient des placement aleatoire comme sur un vrai jeu de des*/}
         <div className={styles.dicesContainer}>
           <div className={styles.dicesLaunched}>
-            <p>Dés lancés: </p>
+            <p>{showAttackAnimation ? `Chiffre d'attaque : ${attackNumber}` : 'Dés lancés: '}</p>
             <div className={styles.dices}>
-              {(lobby?.step === step.dices || lobby?.step === step.lockAnimation) &&
+              {!showAttackAnimation &&
+                (lobby?.step === step.dices || lobby?.step === step.lockAnimation) &&
                 activePlayer?.dices?.map((data, index) => {
+                  const isMyTurn = user?.id === activePlayer?._id;
                   return (
                     <button
-                      // TODO mettre un truc pour que ça soit pas cliquable si le joueur n'est pas celui qui joue
                       className={`${styles.dice} ${
                         selectedDices.includes(index) ? styles.diceSelected : ''
                       }`}
-                      onClick={() => selectDice(index)}
+                      onClick={isMyTurn ? () => selectDice(index) : undefined}
+                      disabled={!isMyTurn}
                       key={`${data}-${index}`}
                     >
                       {data}
@@ -110,6 +126,13 @@ const Board = () => {
                     </button>
                   );
                 })}
+              {showAttackAnimation && activePlayer?.attackDices && (
+                <AttackAnimation
+                  attackDices={activePlayer.attackDices}
+                  attackNumber={attackNumber}
+                  onAnimationEnd={handleAttackAnimationEnd}
+                />
+              )}
             </div>
           </div>
           <div className={styles.dicesLocked}>
@@ -125,10 +148,9 @@ const Board = () => {
             </div>
           </div>
         </div>
-        {lobby?.step === step.none && user?.username === activePlayer?.username && (
+        {lobby?.step === step.none && user?.id === activePlayer?._id && (
           <button
             className={styles.rollButton}
-            /**disabled={player._id !== state.user.id}*/
             onClick={() => {
               if (id) changeGameStep(id, step.dices);
             }}
@@ -136,11 +158,8 @@ const Board = () => {
             Roll the dices 🎲
           </button>
         )}
-        {lobby?.step === step.dices && user?.username === activePlayer?.username && (
-          <button
-            className={styles.lockButton}
-            /**disabled={player._id !== state.user.id}*/ onClick={lockSelectedDices}
-          >
+        {lobby?.step === step.dices && user?.id === activePlayer?._id && (
+          <button className={styles.lockButton} onClick={lockSelectedDices}>
             Lock the dices 🔒
           </button>
         )}
@@ -151,12 +170,10 @@ const Board = () => {
           return <PlayerComponent key={index} player={player} />;
         })}
       </div>
-      {lobby?.step === step.scoreAdditionAnimation && (
+      {lobby?.step === step.scoreAdditionAnimation && !showAttackAnimation && (
         <DicesResultsAnimation
           dices={activePlayer?.lockedDices?.length === 6 ? activePlayer?.lockedDices : []}
-          onAnimationEnd={() => {
-            if (id) changeGameStep(id, step.none);
-          }}
+          onAnimationEnd={handleScoreAnimationEnd}
         />
       )}
     </div>

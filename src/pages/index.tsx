@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import Modal from '@/components/Modal/Modal';
+import UsernameModal from '@/components/UsernameModal/UsernameModal';
 
 import { createALobby } from '@/services/services';
 import { setUser } from '@/store/slices/clientSlice';
@@ -17,9 +18,9 @@ export default function Index() {
   const [state, setState] = useState({
     showJoinModal: false,
     showCreateModal: false,
-    showRenameModal: false,
+    showUsernameModal: false,
     private: false,
-    usernameInput: null,
+    joinInput: '',
     user: {
       id: '',
       username: '',
@@ -28,13 +29,18 @@ export default function Index() {
 
   useEffect(() => {
     const userFromStorage = localStorage.getItem('user');
-    if (!userFromStorage) return;
-
+    if (!userFromStorage) {
+      setState((state) => ({ ...state, showUsernameModal: true }));
+      return;
+    }
     setState((state) => ({ ...state, user: JSON.parse(userFromStorage) }));
   }, []);
 
-  const toggleRenameModal = () => {
-    setState((state) => ({ ...state, showCreateModal: !state.showRenameModal }));
+  const handleUsernameSubmit = (username: string): void => {
+    const user = { username, id: uuidv4() };
+    localStorage.setItem('user', JSON.stringify(user));
+    setState((state) => ({ ...state, user, showUsernameModal: false }));
+    dispatch(setUser(user));
   };
 
   const toggleCreateModal = () => {
@@ -49,22 +55,34 @@ export default function Index() {
     setState((state) => ({ ...state, private: boolean }));
   };
 
-  // TODO c'est plus bon ça c'est user :{ username, id} mnt mais ça va surement sauté avec le mise en modal
-  const usernameChange = (username: string): void => {
-    setState({ ...state, user: { ...state.user, username: username } });
+  const joinInputChange = (value: string): void => {
+    setState((state) => ({ ...state, joinInput: value }));
   };
 
-  const usernameValidate = (): void => {
-    if (!state.usernameInput) return;
-    // TODO remettre une condition pour si il a déjà un id ou non
-    const user = {
-      username: state.usernameInput,
-      id: uuidv4(),
-    };
+  // Accepts either a full invite link (as copied from the lobby's "Copier le
+  // lien" button, e.g. http://localhost:3000/game?id=XYZ) or a bare lobby id.
+  const extractLobbyId = (input: string): string => {
+    const trimmed = input.trim();
+    try {
+      const url = new URL(trimmed);
+      return url.searchParams.get('id') || trimmed;
+    } catch {
+      return trimmed;
+    }
+  };
+
+  const joinLobby = () => {
+    const lobbyId = extractLobbyId(state.joinInput);
+    if (!lobbyId) return;
+
+    const user =
+      state.user.username && state.user.id
+        ? state.user
+        : { username: state.user.username || 'puiguin', id: state.user.id || uuidv4() };
+
     localStorage.setItem('user', JSON.stringify(user));
-    setState({ ...state, user: user });
-    console.log(user);
     dispatch(setUser(user));
+    router.push(`/game?id=${lobbyId}`);
   };
 
   const createLobby = async () => {
@@ -92,24 +110,7 @@ export default function Index() {
     // TODO faire un div à coté comme on fait dans le board avec une icone d'utilisateur et le pseudo
     <div className={styles.container}>
       <h1 className={styles.title}>Dollar Canadien 🍁</h1>
-      <Modal isOpen={state.showRenameModal} isClosable={false} onClose={toggleRenameModal}>
-        <div className={styles.modalContent}>
-          <label htmlFor="username" className={styles.label}>
-            Quel est votre pseudonyme ?
-          </label>
-          <input
-            id="username"
-            type="text"
-            onChange={(e) => usernameChange(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && usernameValidate()}
-            placeholder="Entrez votre pseudonyme"
-            className={styles.input}
-          />
-          <button onClick={usernameValidate} className={styles.button}>
-            Valider
-          </button>
-        </div>
-      </Modal>
+      <UsernameModal isOpen={state.showUsernameModal} onSubmit={handleUsernameSubmit} />
       <button onClick={toggleCreateModal} className={styles.button} aria-label="Créer une partie">
         Créer une partie →
       </button>
@@ -145,7 +146,22 @@ export default function Index() {
         Rejoindre une partie →
       </button>
       <Modal isOpen={state.showJoinModal} isClosable={true} onClose={toggleJoinModal}>
-        <div></div>
+        <div className={styles.modalContent}>
+          <label htmlFor="joinInput" className={styles.label}>
+            Lien ou code de la partie
+          </label>
+          <input
+            id="joinInput"
+            type="text"
+            onChange={(e) => joinInputChange(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && joinLobby()}
+            placeholder="Colle le lien d'invitation ou le code du salon"
+            className={styles.input}
+          />
+          <button onClick={joinLobby} className={styles.button}>
+            Rejoindre
+          </button>
+        </div>
       </Modal>
       {/* TODO faire un carouselle ? */}
       <div className={styles.description}>
