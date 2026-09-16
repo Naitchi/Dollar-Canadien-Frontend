@@ -5,7 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '@/store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setGame } from '@/store/slices/gameSlice';
-import { addAPlayer, changeReadyStatus, startAGame } from '@/services/services';
+import {
+  addAPlayer,
+  changeOptions,
+  changeReadyStatus,
+  removeAPlayer,
+  startAGame,
+} from '@/services/services';
 
 // Components
 import Modal from '../Modal/Modal';
@@ -37,8 +43,11 @@ const Lobby = () => {
     usernameInput: null,
     isModalOpen: false,
   });
+  const [showCopyNotif, setShowCopyNotif] = useState(false);
 
   const lobby = useSelector((state: RootState) => state.game.game);
+
+  const isHost = lobby?.host?.id === state.user.id;
 
   // TODO faire un input en mode le label : Enjeu: (un select) "le premier perdant"| "les perdants" | "le gagant", devera `l'input`
   // et ensuite on l'affiche a la fin avec les noms a la place de "le premier perdant" etc.
@@ -88,16 +97,32 @@ const Lobby = () => {
     dispatch(setUser(user));
   };
 
-  // TODO check ça ? existe pas dans ce composent non ? plutôt dans l'index
+  // TODO remettre a un autre endroit que la modal pour pouvoir facilement se rename
   const usernameChange = (usernameInput: string): void => {
     setState({ ...state, usernameInput: usernameInput });
     console.log(state.user);
     dispatch(setUser(state.user));
   };
 
-  // const togglePrivacy = () => {
-  //   // TODO faire ce service encore
-  // };
+  const changeOptionsHandler = (options: {
+    private?: boolean;
+    maxHp?: number;
+    maxPlayers?: number;
+  }) => {
+    if (!lobby) return;
+    changeOptions(state.user, lobby._id, {
+      private: options.private ?? lobby.private,
+      maxHp: options.maxHp ?? lobby.maxHp,
+      maxPlayers: options.maxPlayers ?? lobby.maxPlayers,
+    });
+  };
+
+  const quit = () => {
+    if (!lobby) return;
+    const index = getPlayerById(lobby, state.user);
+    if (index === -1) return;
+    removeAPlayer(state.user, lobby._id, index);
+  };
 
   const toggleReady = () => {
     if (lobby) console.log(changeReadyStatus(state.user, lobby._id));
@@ -128,25 +153,58 @@ const Lobby = () => {
     </Modal>
   ) : (
     <div>
-      {/* Pas encore de service pour ça */}
-      {/* <div id="rules">
+      {/** TODO quand on ferme la page du lobby retirer le joueur de la partie || ne pas rajouter le meme joueur si il est deja dans la game */}
+      {/** TODO changer pour qu'il n'y ai que l'host qui puisse modifie avec propriete disable */}
+      <button onClick={quit}>Quitter la partie</button>
+      <div id="rules">
         <div className="rule">
           <label htmlFor="privacy">Rendre la partie privé:</label>
+          {/* TODO rendre ca en slider*/}
           <input
-            value={lobby?.private.toString()}
+            disabled={!isHost}
+            checked={!!lobby?.private}
             type="checkbox"
             id="privacy"
-            onClick={togglePrivacy}
+            onChange={(e) => changeOptionsHandler({ private: e.target.checked })}
           />
         </div>
-      </div> */}
-      {/* TODO faire un bouton pour copier le lien du lobby */}
+        <div className="rule">
+          <label htmlFor="maxHp">Point de vie de depart:</label>
+          <input
+            disabled={!isHost}
+            value={lobby?.maxHp}
+            type="number"
+            id="maxHp"
+            onChange={(e) => changeOptionsHandler({ maxHp: Number(e.target.value) })}
+          />
+        </div>
+        <div className="rule">
+          <label htmlFor="maxPlayers">Nombre de joueurs maximum dans le salon :</label>
+          <input
+            disabled={!isHost}
+            value={lobby?.maxPlayers}
+            type="number"
+            id="maxPlayers"
+            onChange={(e) => changeOptionsHandler({ maxPlayers: Number(e.target.value) })}
+          />
+        </div>
+      </div>
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText(window.location.href);
+          setShowCopyNotif(true);
+          setTimeout(() => setShowCopyNotif(false), 2000);
+        }}
+        className={styles.copyLinkButton}
+      >
+        {showCopyNotif ? 'Lien copié !' : "Copier le lien d'invitation du lobby"}
+      </button>
       <div id="players">
         {lobby?.players.map((player, index) => {
           return (
             <div className={styles.playerDiv} key={'player' + index}>
               <p>{player.username}</p>
-              {player._id === lobby.host.id ? (
+              {isHost ? (
                 <div>👑</div>
               ) : (
                 <button
@@ -161,10 +219,9 @@ const Lobby = () => {
           );
         })}
         {/* TODO faire un bouton pour le host pour exclure */}
+        {/* TODO pour ca il faut aussi interdire de rerejoindre via l'ip ou un truc comme ca, ou alors changer l'id de la game et rediriger le reste de la room */}
       </div>
-      {/*TODO Rajouter un bouton/condition la qui dépends de si t'es l'host t'as startgame et sinon t'as un bouton ready (je préfère cette idée à l'actuelle)*/}
-      {/** Ou un "en attente de l'hote" a la place du startgame si t'es pas l'host*/}
-      {<button onClick={startGame}>Start Game</button>}
+      {isHost ? <button onClick={startGame}>Start Game</button> : <p>En attente de l&apos;host</p>}
     </div>
   );
 };

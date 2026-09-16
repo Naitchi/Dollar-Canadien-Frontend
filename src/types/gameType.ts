@@ -12,6 +12,8 @@ export interface Player {
 export interface Game {
   _id: string;
   private: boolean;
+  maxHp: number;
+  maxPlayers: number;
   host: {
     id: string;
     username: string;
@@ -31,9 +33,15 @@ export enum step {
   dicesAnimation = 'dicesAnimation',
   dices = 'dices',
   lockAnimation = 'lockAnimation',
-  scoreAdditionAnimation = 'scoreAdditionAnimation', // TODO je verrai bien une animation quand les 6dés sont lock pour additionné tout et ensuite on lui met bien son score total et la pahse suivante
+  scoreAdditionAnimation = 'scoreAdditionAnimation',
   attack = 'attack', // TODO peut-etre avoir plus ici en mode "showAttackNumber" qui apparait au milieu de l'écran et se place en haut a droite ou gauche
   damage = 'damage', // TODO genre pareil que score addition mais c'est une multiplication entre le nombre d'attaque et le nombre de fois qu'on la eu
-  gameEnd = 'gameEnd', // TODO Un menu qui pop du bas et qui affiche qui a gagné
+  gameEnd = 'gameEnd',
 } // TODO en faire un autre pour quand ça sélectionne la victime en mode ça compte un par un
-// TODO faire une animation quand un joueur meurt en mode on le voit en plus grand et son coeur casse idk
+// TODO faire une animation quand un joueur meurt en mode on le voit en plus grand et son coeur casse idk a la maniere d'undertale
+
+export interface Options {
+  maxHp: number;
+  maxPlayers: number;
+  private: boolean;
+}

@@ -1,4 +1,4 @@
-import { Game, step, User } from '@/types/gameType';
+import { Game, Options, step, User } from '@/types/gameType';
 
 const link = 'http://localhost:3001';
 
@@ -23,6 +23,42 @@ export const getALobby = async (id: string): Promise<Game> => {
   console.log('in getALobby');
   const response = await fetch(`${link}/api/lobby/${id}`, {
     method: 'get',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.json();
+};
+
+export const changeOptions = async (user: User, id: string, options: Options) => {
+  console.log('in changeOptions');
+
+  const response = await fetch(`${link}/api/changeOptions`, {
+    method: 'post',
+    body: JSON.stringify({
+      user: user,
+      id: id,
+      options: options,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.json();
+};
+
+export const removeAPlayer = async (user: User, id: string, IndexToKick: number) => {
+  console.log('in removeAPlayer');
+
+  const response = await fetch(`${link}/api/removeAPlayer`, {
+    method: 'post',
+    body: JSON.stringify({
+      user: user,
+      id: id,
+      IndexToKick: IndexToKick,
+    }),
     headers: {
       'Content-Type': 'application/json',
     },

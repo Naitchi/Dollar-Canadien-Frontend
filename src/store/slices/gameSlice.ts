@@ -16,7 +16,7 @@ const gameSlice = createSlice({
     updatePlayer: (state, action: PayloadAction<Partial<Player> & { id: string }>) => {
       const { id, ...updates } = action.payload;
       const index = state.game?.players.findIndex((player) => player._id === id);
-      if (index !== -1 && state.game?.players && index) {
+      if (index !== undefined && index !== -1 && state.game?.players) {
         state.game.players[index] = {
           ...state.game?.players[index],
           ...updates,

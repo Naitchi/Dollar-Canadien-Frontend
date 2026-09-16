@@ -16,7 +16,7 @@ const Results = () => {
   useEffect(() => {
     if (!lobby) return;
     const getWinner = (game: Game) => {
-      const winner = game.players.filter((player) => player.hp < 0)[0];
+      const winner: Player = game.players.filter((player) => player.hp > 0)[0];
       if (winner) setWinner(winner);
       else console.error('No winner found');
     };
