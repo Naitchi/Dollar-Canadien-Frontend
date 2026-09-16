@@ -1,0 +1,75 @@
+.dice {
+  font-size: 3rem;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  border: none;
+  margin-right: 10px;
+  background-color: whitesmoke;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  animation: arrive 0.4s ease-out forwards;
+}
+
+.dice.hit {
+  animation:
+    arrive 0.4s ease-out forwards,
+    hit 0.5s ease-out 0.5s forwards;
+}
+
+@keyframes arrive {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hit {
+  0% {
+    background-color: whitesmoke;
+    box-shadow: none;
+  }
+  60% {
+    transform: translateY(-10px) scale(1.15);
+  }
+  100% {
+    background-color: rgb(255, 210, 210);
+    box-shadow: 0 4px 10px rgba(145, 8, 8, 0.4);
+    transform: translateY(-6px) scale(1.1);
+  }
+}
+
+.damageBadge {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  background-color: rgb(145, 8, 8);
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  animation: bounceAnimation 0.5s ease-out forwards;
+}
+
+@keyframes bounceAnimation {
+  0% {
+    transform: scaleY(1) scaleX(1);
+  }
+  25% {
+    transform: scaleY(1.5) scaleX(0.8);
+  }
+  50% {
+    transform: scaleY(0.8) scaleX(1.5);
+  }
+  75% {
+    transform: scaleY(1.2) scaleX(1.2);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+  }
+}

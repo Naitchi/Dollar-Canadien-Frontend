@@ -26,38 +26,50 @@ export default function GamePage() {
   // TODO mettre le boutton de lancement en gris si tout les joueurs ne sont pas prêts
 
   useEffect(() => {
+    if (typeof id !== 'string') {
+      console.error("Problème avec l'idRoom", id);
+      return;
+    }
+
     const fetchLobby = async () => {
-      if (!lobby) {
-        if (typeof id !== 'string') {
-          console.error("Problème avec l'idRoom", id);
-          return;
+      try {
+        const game = await getALobby(id);
+        if (game) {
+          dispatch(setGame(game));
         }
-        try {
-          const game = await getALobby(id);
-          if (game) {
-            dispatch(setGame(game));
-          }
-        } catch (error) {
-          console.error('Erreur lors de la récupération du lobby :', error);
-          // TODO : Mettre un message d'erreur utilisateur ici et une redirection
-        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du lobby :', error);
+        // TODO : Mettre un message d'erreur utilisateur ici et une redirection
       }
     };
     fetchLobby();
 
     // Subscribe to the channel
-    const channel = getPusher().subscribe(`DollarCanadien-${id}`);
+    const channelName = `DollarCanadien-${id}`;
+    const channel = getPusher().subscribe(channelName);
 
-    channel.bind('updatePlayers', (data: Player[]) => {
+    const handleUpdatePlayers = (data: Player[]) => {
       dispatch(updatePlayers(data));
-    });
-
-    channel.bind('updateGame', (data: Game) => {
-      console.log(data);
-
+    };
+    const handleUpdateGame = (data: Game) => {
       dispatch(setGame(data));
-    });
-  }, [dispatch, id, lobby]);
+    };
+
+    channel.bind('updatePlayers', handleUpdatePlayers);
+    channel.bind('updateGame', handleUpdateGame);
+
+    // `lobby` is deliberately NOT a dependency here: it changes on every
+    // Pusher event (each dispatch above replaces it), so including it would
+    // re-run this effect on every single update, re-subscribing and
+    // re-binding without ever unbinding the previous handlers - each new
+    // event would then fire all previously stacked handlers, dispatching
+    // the same update multiple times and getting worse every turn.
+    return () => {
+      channel.unbind('updatePlayers', handleUpdatePlayers);
+      channel.unbind('updateGame', handleUpdateGame);
+      getPusher().unsubscribe(channelName);
+    };
+  }, [dispatch, id]);
 
   return (
     <div className={styles.gamePage}>

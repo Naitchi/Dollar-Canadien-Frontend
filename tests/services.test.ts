@@ -23,7 +23,14 @@ vi.stubGlobal('fetch', mockFetch);
 
 beforeEach(() => {
   mockFetch.mockReset();
-  mockFetch.mockResolvedValue({ json: () => Promise.resolve({ ok: true }) });
+  // `ok`/`text` are included so the fire-and-forget functions' internal
+  // success/failure check (added to surface silently-swallowed errors)
+  // doesn't spuriously log a failure for this default successful mock.
+  mockFetch.mockResolvedValue({
+    ok: true,
+    text: () => Promise.resolve(''),
+    json: () => Promise.resolve({ ok: true }),
+  });
 });
 
 function getCallArgs() {
@@ -154,6 +161,29 @@ describe('lockDices', () => {
     expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1', lockedDices: selectedDices });
     expect(opts.keepalive).toBe(true);
     expect(result).toBeUndefined();
+  });
+
+  it('logs an error instead of failing silently when the server responds with a non-ok status', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500, text: () => Promise.resolve('boom') });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    lockDices(user, 'lobby-1', [0, 1]);
+    // let the fetch promise chain (.then/.catch) flush before asserting
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('lockDices'), 'boom');
+    errorSpy.mockRestore();
+  });
+
+  it('logs a network error instead of failing silently when fetch itself rejects', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('network down'));
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    lockDices(user, 'lobby-1', [0, 1]);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('lockDices'), expect.any(Error));
+    errorSpy.mockRestore();
   });
 });
 

@@ -14,7 +14,7 @@ import {
 } from '@/services/services';
 
 // Components
-import Modal from '../Modal/Modal';
+import UsernameModal from '../UsernameModal/UsernameModal';
 
 // Functions
 import { getPlayerById } from '@/functions/functions';
@@ -28,8 +28,7 @@ interface State {
     id: string;
     username: string;
   };
-  usernameInput: string | null;
-  isModalOpen: boolean;
+  showUsernameModal: boolean;
 }
 
 const Lobby = () => {
@@ -40,8 +39,7 @@ const Lobby = () => {
       username: '',
       id: '',
     },
-    usernameInput: null,
-    isModalOpen: false,
+    showUsernameModal: false,
   });
   const [showCopyNotif, setShowCopyNotif] = useState(false);
 
@@ -57,7 +55,7 @@ const Lobby = () => {
     // TODO on pourrait faire un loading la pendant qu'on cherche le username dans le localStorage et avant d'afficher le salon/la modal un fois qu'on a la réponse/les données des autres joueurs
     const userFromStorage = localStorage.getItem('user');
     if (!userFromStorage) {
-      setState((state) => ({ ...state, isModalOpen: true }));
+      setState((state) => ({ ...state, showUsernameModal: true }));
     } else {
       setState((state) => ({ ...state, user: JSON.parse(userFromStorage) }));
       dispatch(setUser(JSON.parse(userFromStorage)));
@@ -83,25 +81,29 @@ const Lobby = () => {
     }
   }, [state.user, lobby, dispatch]);
 
-  // Methods
-  const toggleModal = () => setState({ ...state, isModalOpen: !state.isModalOpen });
-  const usernameValidate = (): void => {
-    if (!state.usernameInput) return;
-    const user = {
-      username: state.usernameInput,
-      id: uuidv4(),
+  // Remove the player from the lobby when they close/leave the tab while
+  // still in the pre-game lobby (not during an active game - this effect
+  // only lives for as long as <Lobby /> is mounted, i.e. before `actif` is
+  // set on the game).
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (!lobby || !state.user.id) return;
+      const index = getPlayerById(lobby, state.user);
+      if (index === -1) return;
+      removeAPlayer(state.user, lobby._id, index);
     };
-    localStorage.setItem('user', JSON.stringify(user));
-    setState({ ...state, user: user });
-    console.log(user);
-    dispatch(setUser(user));
-  };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [lobby, state.user]);
 
-  // TODO remettre a un autre endroit que la modal pour pouvoir facilement se rename
-  const usernameChange = (usernameInput: string): void => {
-    setState({ ...state, usernameInput: usernameInput });
-    console.log(state.user);
-    dispatch(setUser(state.user));
+  // Methods
+  const handleUsernameSubmit = (username: string): void => {
+    const user = { username, id: uuidv4() };
+    localStorage.setItem('user', JSON.stringify(user));
+    setState((state) => ({ ...state, user, showUsernameModal: false }));
+    dispatch(setUser(user));
   };
 
   const changeOptionsHandler = (options: {
@@ -133,24 +135,7 @@ const Lobby = () => {
   };
 
   return !state.user.username ? (
-    <Modal isOpen={state.isModalOpen} isClosable={false} onClose={toggleModal}>
-      <div className={styles.modalContent}>
-        <label htmlFor="username" className={styles.label}>
-          Quel est votre pseudonyme ?
-        </label>
-        <input
-          id="username"
-          type="text"
-          onChange={(e) => usernameChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && usernameValidate()}
-          placeholder="Entrez votre pseudonyme"
-          className={styles.input}
-        />
-        <button onClick={usernameValidate} className={styles.button}>
-          Valider
-        </button>
-      </div>
-    </Modal>
+    <UsernameModal isOpen={state.showUsernameModal} onSubmit={handleUsernameSubmit} />
   ) : (
     <div>
       {/** TODO quand on ferme la page du lobby retirer le joueur de la partie || ne pas rajouter le meme joueur si il est deja dans la game */}
@@ -201,10 +186,11 @@ const Lobby = () => {
       </button>
       <div id="players">
         {lobby?.players.map((player, index) => {
+          const isPlayerHost = player._id === lobby?.host?.id;
           return (
             <div className={styles.playerDiv} key={'player' + index}>
               <p>{player.username}</p>
-              {isHost ? (
+              {isPlayerHost ? (
                 <div>👑</div>
               ) : (
                 <button
