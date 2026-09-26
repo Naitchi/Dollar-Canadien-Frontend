@@ -1,0 +1,189 @@
+/* Floating in the bottom-right corner, over the game (and its red low-HP edges). */
+.chat {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.toggle {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background-color: var(--surface-raised);
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.toggle:hover {
+  transform: translateY(-2px);
+}
+
+/* Unread messages. */
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background-color: var(--danger);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel {
+  width: 340px;
+  height: 440px;
+  max-height: calc(100vh - 120px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1rem;
+}
+
+.close {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty {
+  margin: auto 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.message {
+  align-self: flex-start;
+  max-width: 85%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: var(--surface-raised);
+  overflow-wrap: anywhere;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Our own messages, on the right. */
+.mine {
+  align-self: flex-end;
+  background-color: rgba(0, 112, 243, 0.25);
+}
+
+.author {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.time {
+  align-self: flex-end;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.form {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.send {
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.error {
+  padding: 0 12px 12px;
+  color: #ff6b6b;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  .chat {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .panel {
+    width: calc(100vw - 24px);
+    height: 60vh;
+  }
+}

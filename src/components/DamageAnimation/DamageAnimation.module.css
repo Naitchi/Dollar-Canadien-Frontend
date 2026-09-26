@@ -1,0 +1,60 @@
+.damage {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.score {
+  font-size: 2.6rem;
+  font-weight: 700;
+  animation: arrive 0.4s ease-out both;
+}
+
+.total {
+  color: #ff8a80;
+}
+
+.target {
+  color: var(--text-muted);
+  font-size: 1.6rem;
+}
+
+/* Same look as the attack damage badge (AttackAnimation). */
+.badge {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  background-color: var(--damage);
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  animation: hit 0.5s ease-out forwards;
+}
+
+@keyframes arrive {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hit {
+  0% {
+    transform: scaleY(1) scaleX(1);
+  }
+  25% {
+    transform: scaleY(1.5) scaleX(0.8);
+  }
+  50% {
+    transform: scaleY(0.8) scaleX(1.5);
+  }
+  75% {
+    transform: scaleY(1.2) scaleX(1.2);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+  }
+}

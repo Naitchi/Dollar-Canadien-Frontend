@@ -9,7 +9,7 @@ export default function TestPage() {
 
   return (
     <div className={styles.testPage}>
-      <DicesResultsAnimation dices={dices} />
+      <DicesResultsAnimation dices={dices} onAnimationEnd={() => {}} />
     </div>
   );
 }

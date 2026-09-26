@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Styles
 import styles from './DicesResultsAnimation.module.css';
@@ -27,6 +27,15 @@ const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices, onAnima
 
   const total = dices[0] + dices[1] + dices[2] + dices[3] + dices[4] + dices[5];
 
+  // Kept in a ref so that the parent re-rendering (every Pusher update gives
+  // it a new callback) doesn't restart the animation from scratch.
+  const onAnimationEndRef = useRef(onAnimationEnd);
+  useEffect(() => {
+    onAnimationEndRef.current = onAnimationEnd;
+  });
+
+  // The total duration (last timeout) is mirrored by SCORE_ANIMATION_MS in
+  // the backend (functions/turn.js): keep them in sync.
   useEffect(() => {
     const timeouts = [
       setTimeout(() => setAnimationStep(step.step1), 500),
@@ -35,13 +44,13 @@ const DicesResultsAnimation: React.FC<DicesResultsAnimation> = ({ dices, onAnima
       setTimeout(() => setAnimationStep(step.step4), 3700),
       setTimeout(() => setAnimationStep(step.step5), 4000),
       setTimeout(() => setAnimationStep(step.step6), 5000),
-      setTimeout(() => onAnimationEnd(), 6000),
+      setTimeout(() => onAnimationEndRef.current(), 6000),
     ];
 
     return () => {
       timeouts.forEach(clearTimeout);
     };
-  }, [onAnimationEnd]);
+  }, []);
 
   return (
     <div className={styles.block}>

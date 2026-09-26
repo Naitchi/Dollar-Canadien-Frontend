@@ -1,4 +1,235 @@
-.playerDiv {
+.lobby {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+}
+
+.count,
+.hint,
+.status {
+  color: var(--text-muted);
+}
+
+.status {
+  text-align: center;
+}
+
+.inviteRow {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.input:disabled {
+  opacity: 0.6;
+}
+
+.players {
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.playerRow {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: var(--surface-raised);
+
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  font-size: 1.2rem;
+}
+
+.playerName {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.you {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: var(--border);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ready {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #6fdc8c;
+}
+
+.hostBadge {
+  background-color: rgba(245, 197, 66, 0.15);
+  color: var(--gold);
+}
+
+.kickButton {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.kickButton:hover {
+  background-color: rgba(192, 57, 43, 0.2);
+  color: #ff8a80;
+}
+
+.stakeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.stakeTarget {
+  width: auto;
+}
+
+.stakeVerb {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.stakeText {
+  flex: 1;
+  min-width: 180px;
+}
+
+.rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.rule {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.primaryButton,
+.secondaryButton,
+.quitButton {
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.primaryButton {
+  background-color: var(--primary);
+  color: white;
+}
+
+.primaryButton:hover:enabled {
+  background-color: var(--primary-hover);
+}
+
+.primaryButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  flex-shrink: 0;
+  background-color: var(--surface-raised);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.secondaryButton:hover {
+  background-color: var(--border);
+}
+
+.quitButton {
+  background-color: transparent;
+  color: #ff8a80;
+  border: 1px solid rgba(255, 138, 128, 0.4);
+}
+
+.quitButton:hover {
+  background-color: rgba(192, 57, 43, 0.15);
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+@media (max-width: 480px) {
+  /* Full-width buttons, the main action on top. */
+  .actions {
+    flex-direction: column-reverse;
+  }
 }

@@ -1,27 +1,26 @@
 // Style
 import styles from './Player.module.css';
 
+// Components
+import Heart from '../Heart/Heart';
+
 // Type
 import { Player } from '@/types/gameType';
 interface PlayerComponent {
   player: Player;
+  maxHp: number;
 }
 
-const PlayerComponent: React.FC<PlayerComponent> = ({ player }) => {
-  return player.hp > 0 ? (
-    <div className={styles.player}>
-      <p>🙍‍♂️</p>
-      <p>{player.username}</p>
-      <p>
-        {player.hp} <span className={styles.heart}>❤</span>
+const PlayerComponent: React.FC<PlayerComponent> = ({ player, maxHp }) => {
+  const alive = player.hp > 0;
+  return (
+    <div className={`${styles.player} ${alive ? '' : styles.dead}`}>
+      <p className={styles.avatar}>{alive ? '🙍‍♂️' : '💀'}</p>
+      <p className={styles.name} title={player.username}>
+        {player.username}
       </p>
-    </div>
-  ) : (
-    <div className={styles.player}>
-      <p>💀</p>
-      <p>{player.username}</p>
-      <p>
-        {player.hp} <span className={styles.heart}>💔</span>
+      <p className={styles.hp}>
+        {player.hp} <Heart hp={player.hp} maxHp={maxHp} />
       </p>
     </div>
   );

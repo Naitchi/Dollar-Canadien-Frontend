@@ -34,6 +34,9 @@ function makeGame(overrides: Partial<Game> = {}): Game {
     host: { id: 'host1', username: 'Host' },
     actif: null,
     step: step.none,
+    turnDeadline: null,
+    stake: { target: 'firstLoser', text: '' },
+    eliminated: [],
     players: [
       makePlayer({ _id: 'p1', index: 0, username: 'Alice', hp: 10 }),
       makePlayer({ _id: 'p2', index: 1, username: 'Bob', hp: 8 }),

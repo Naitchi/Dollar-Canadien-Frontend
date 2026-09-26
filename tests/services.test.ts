@@ -10,13 +10,16 @@ import {
   lockDices,
   endTurn,
   changeGameStep,
+  turnTimeout,
+  restartGame,
+  sendMessage,
 } from '@/services/services';
 import { Options, step, User } from '@/types/gameType';
 
 const BASE = 'http://localhost:3001';
 
 const user: User = { id: 'user-1', username: 'Alice' };
-const options: Options = { maxHp: 100, maxPlayers: 4, private: true };
+const options: Options = { maxHp: 100, maxPlayers: 4 };
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -40,41 +43,63 @@ function getCallArgs() {
 }
 
 describe('createALobby', () => {
-  it('POSTs to /api/createALobby with { user, private } and returns json()', async () => {
-    const responseBody = { _id: 'lobby-1' };
-    mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve(responseBody) });
+  it('POSTs to /api/createALobby with { user } and returns json()', async () => {
+    const responseBody = { game: { _id: 'lobby-1' }, me: 'pub-1' };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(responseBody) });
 
-    const result = await createALobby(user, true);
+    const result = await createALobby(user);
 
     const { url, opts } = getCallArgs();
     expect(url).toBe(`${BASE}/api/createALobby`);
     expect(opts.method).toBe('post');
     expect(opts.headers).toMatchObject({ 'Content-Type': 'application/json' });
-    expect(JSON.parse(opts.body)).toEqual({ user, private: true });
+    expect(JSON.parse(opts.body)).toEqual({ user });
     expect(result).toEqual(responseBody);
+  });
+
+  it("throws with the server's message on an error status", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      text: () => Promise.resolve('Utilisateur invalide.'),
+    });
+
+    await expect(createALobby(user)).rejects.toThrow('Utilisateur invalide.');
   });
 });
 
 describe('getALobby', () => {
-  it('GETs /api/lobby/:id with no body and returns json()', async () => {
-    const responseBody = { _id: 'lobby-1', players: [] };
-    mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve(responseBody) });
+  it('GETs /api/lobby/:id with our secret in a header (never in the URL) and returns json()', async () => {
+    const responseBody = { game: { _id: 'lobby-1', players: [] }, me: 'pub-1' };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(responseBody) });
 
-    const result = await getALobby('lobby-1');
+    const result = await getALobby('lobby-1', user);
 
     const { url, opts } = getCallArgs();
     expect(url).toBe(`${BASE}/api/lobby/lobby-1`);
     expect(opts.method).toBe('get');
-    expect(opts.headers).toMatchObject({ 'Content-Type': 'application/json' });
+    expect(opts.headers).toMatchObject({
+      'Content-Type': 'application/json',
+      'X-Player-Secret': user.id,
+    });
     expect(opts.body).toBeUndefined();
     expect(result).toEqual(responseBody);
+  });
+
+  it('sends no secret header when there is no user yet', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({}) });
+
+    await getALobby('lobby-1', null);
+
+    const { opts } = getCallArgs();
+    expect(opts.headers).not.toHaveProperty('X-Player-Secret');
   });
 });
 
 describe('changeOptions', () => {
   it('POSTs to /api/changeOptions with { user, id, options } and returns json()', async () => {
     const responseBody = { updated: true };
-    mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve(responseBody) });
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(responseBody) });
 
     const result = await changeOptions(user, 'lobby-1', options);
 
@@ -88,25 +113,25 @@ describe('changeOptions', () => {
 });
 
 describe('removeAPlayer', () => {
-  it('POSTs to /api/removeAPlayer with { user, id, IndexToKick } and returns json()', async () => {
+  it('POSTs to /api/removeAPlayer with { user, id, targetId } and returns json()', async () => {
     const responseBody = { kicked: true };
-    mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve(responseBody) });
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(responseBody) });
 
-    const result = await removeAPlayer(user, 'lobby-1', 2);
+    const result = await removeAPlayer(user, 'lobby-1', 'pub-2');
 
     const { url, opts } = getCallArgs();
     expect(url).toBe(`${BASE}/api/removeAPlayer`);
     expect(opts.method).toBe('post');
     expect(opts.headers).toMatchObject({ 'Content-Type': 'application/json' });
-    expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1', IndexToKick: 2 });
+    expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1', targetId: 'pub-2' });
     expect(result).toEqual(responseBody);
   });
 });
 
 describe('addAPlayer', () => {
   it('POSTs to /api/addAPlayer with { id, user } and returns json()', async () => {
-    const responseBody = { _id: 'lobby-1', players: [{ username: 'Alice' }] };
-    mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve(responseBody) });
+    const responseBody = { game: { _id: 'lobby-1', players: [{ username: 'Alice' }] }, me: 'pub-1' };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(responseBody) });
 
     const result = await addAPlayer(user, 'lobby-1');
 
@@ -117,12 +142,22 @@ describe('addAPlayer', () => {
     expect(JSON.parse(opts.body)).toEqual({ id: 'lobby-1', user });
     expect(result).toEqual(responseBody);
   });
+
+  it("throws with the server's message when the lobby is full", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      text: () => Promise.resolve('Le salon est plein.'),
+    });
+
+    await expect(addAPlayer(user, 'lobby-1')).rejects.toThrow('Le salon est plein.');
+  });
 });
 
 describe('changeReadyStatus', () => {
   it('POSTs to /api/readyUp with { user, id } and returns json()', async () => {
     const responseBody = { ready: true };
-    mockFetch.mockResolvedValueOnce({ json: () => Promise.resolve(responseBody) });
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(responseBody) });
 
     const result = await changeReadyStatus(user, 'lobby-1');
 
@@ -203,14 +238,85 @@ describe('endTurn', () => {
 
 describe('changeGameStep', () => {
   it('fires-and-forgets a POST to /api/changeGameStep with keepalive and returns void', () => {
-    const result = changeGameStep('lobby-1', step.attack);
+    const result = changeGameStep(user, 'lobby-1', step.dices);
 
     const { url, opts } = getCallArgs();
     expect(url).toBe(`${BASE}/api/changeGameStep`);
     expect(opts.method).toBe('post');
     expect(opts.headers).toMatchObject({ 'Content-Type': 'application/json' });
-    expect(JSON.parse(opts.body)).toEqual({ id: 'lobby-1', step: step.attack });
+    expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1', step: step.dices });
     expect(opts.keepalive).toBe(true);
     expect(result).toBeUndefined();
+  });
+});
+
+describe('sendMessage', () => {
+  it('POSTs to /api/sendMessage with { user, id, text } and returns the broadcast message', async () => {
+    const message = { id: 'm1', playerId: 'pub-1', username: 'Alice', text: 'gg', sentAt: 'now' };
+    mockFetch.mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(message) });
+
+    const result = await sendMessage(user, 'lobby-1', 'gg');
+
+    const { url, opts } = getCallArgs();
+    expect(url).toBe(`${BASE}/api/sendMessage`);
+    expect(opts.method).toBe('post');
+    expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1', text: 'gg' });
+    expect(result).toEqual(message);
+  });
+
+  it("throws with the server's message when the player is sending too fast", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      text: () => Promise.resolve('Doucement ! Attends un peu avant de renvoyer un message.'),
+    });
+
+    await expect(sendMessage(user, 'lobby-1', 'spam')).rejects.toThrow('Doucement');
+  });
+});
+
+describe('restartGame', () => {
+  it('fires-and-forgets a POST to /api/restartGame with { user, id }', () => {
+    const result = restartGame(user, 'lobby-1');
+
+    const { url, opts } = getCallArgs();
+    expect(url).toBe(`${BASE}/api/restartGame`);
+    expect(opts.method).toBe('post');
+    expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1' });
+    expect(result).toBeUndefined();
+  });
+});
+
+describe('turnTimeout', () => {
+  it('fires-and-forgets a POST to /api/turnTimeout with { user, id }', () => {
+    const result = turnTimeout(user, 'lobby-1');
+
+    const { url, opts } = getCallArgs();
+    expect(url).toBe(`${BASE}/api/turnTimeout`);
+    expect(opts.method).toBe('post');
+    expect(JSON.parse(opts.body)).toEqual({ user, id: 'lobby-1' });
+    expect(result).toBeUndefined();
+  });
+
+  it('does not log the expected 409 (too early, or someone else already unblocked the turn)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 409, text: () => Promise.resolve('') });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    turnTimeout(user, 'lobby-1');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it('still logs unexpected failures', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 500, text: () => Promise.resolve('boom') });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    turnTimeout(user, 'lobby-1');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('turnTimeout'), 'boom');
+    errorSpy.mockRestore();
   });
 });

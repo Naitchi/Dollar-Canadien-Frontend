@@ -1,4 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --bg: rgb(30, 33, 34);
+  --surface: #272b2d;
+  --surface-raised: #32373a;
+  --border: #3e4447;
+  --text: #e4e4e4;
+  --text-muted: #9aa1a6;
+  --felt: #589248;
+  --wood: #5c4040;
+  --primary: #0070f3;
+  --primary-hover: #005bb5;
+  --success: #28a745;
+  --success-hover: #1e7e34;
+  --danger: #c0392b;
+  --damage: rgb(145, 8, 8);
+  --gold: #f5c542;
+  --radius: 14px;
+}
+
+/* Width/height include padding and border: an input at width: 100% no longer overflows its box. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 * {
   padding: 0;
@@ -8,6 +34,17 @@
 }
 
 body {
-  color: #e4e4e4;
-  background-color: rgb(30, 33, 34);
+  color: var(--text);
+  background-color: var(--bg);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+/* Clicking a button quickly (e.g. selecting dice) must not select its text. */
+button {
+  -webkit-user-select: none;
+  user-select: none;
 }

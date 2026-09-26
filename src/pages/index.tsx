@@ -7,7 +7,7 @@ import Modal from '@/components/Modal/Modal';
 import UsernameModal from '@/components/UsernameModal/UsernameModal';
 
 import { createALobby } from '@/services/services';
-import { setUser } from '@/store/slices/clientSlice';
+import { setMe, setUser } from '@/store/slices/clientSlice';
 import { setGame } from '@/store/slices/gameSlice';
 
 import styles from '../styles/index.module.css';
@@ -17,9 +17,7 @@ export default function Index() {
   const dispatch = useDispatch();
   const [state, setState] = useState({
     showJoinModal: false,
-    showCreateModal: false,
     showUsernameModal: false,
-    private: false,
     joinInput: '',
     user: {
       id: '',
@@ -43,16 +41,8 @@ export default function Index() {
     dispatch(setUser(user));
   };
 
-  const toggleCreateModal = () => {
-    setState((state) => ({ ...state, showCreateModal: !state.showCreateModal }));
-  };
-
   const toggleJoinModal = () => {
     setState((state) => ({ ...state, showJoinModal: !state.showJoinModal }));
-  };
-
-  const setPrivate = (boolean: boolean): void => {
-    setState((state) => ({ ...state, private: boolean }));
   };
 
   const joinInputChange = (value: string): void => {
@@ -100,9 +90,14 @@ export default function Index() {
 
       dispatch(setUser(state.user));
 
-      const lobby = await createALobby(state.user, state.private);
-      dispatch(setGame(lobby));
-      router.push(`/game?id=${lobby._id}`);
+      try {
+        const { game, me } = await createALobby(state.user);
+        dispatch(setMe(me));
+        dispatch(setGame(game));
+        router.push(`/game?id=${game._id}`);
+      } catch (error) {
+        console.error('Erreur lors de la création du lobby :', error);
+      }
     }
   };
 
@@ -111,33 +106,10 @@ export default function Index() {
     <div className={styles.container}>
       <h1 className={styles.title}>Dollar Canadien 🍁</h1>
       <UsernameModal isOpen={state.showUsernameModal} onSubmit={handleUsernameSubmit} />
-      <button onClick={toggleCreateModal} className={styles.button} aria-label="Créer une partie">
+      {/* Toutes les parties sont privées (accessibles uniquement par lien) pour l'instant. */}
+      <button onClick={createLobby} className={styles.button} aria-label="Créer une partie">
         Créer une partie →
       </button>
-      <Modal isOpen={state.showCreateModal} isClosable={true} onClose={toggleCreateModal}>
-        <div className={styles.modalOverlay}>
-          <div className={styles.privacy}>
-            <p>Définir l&apos;accès de la partie :</p>
-            <div className={styles.modalButtons}>
-              <button
-                onClick={() => setPrivate(true)}
-                className={`${styles.modalButton} ${state.private ? styles.activated : ''}`}
-              >
-                Privé
-              </button>
-              <button
-                onClick={() => setPrivate(false)}
-                className={`${styles.modalButton} ${state.private ? '' : styles.activated}`}
-              >
-                Public
-              </button>
-            </div>
-          </div>
-          <button onClick={createLobby} className={styles.modalButton}>
-            Créer
-          </button>
-        </div>
-      </Modal>
       <button
         onClick={toggleJoinModal}
         className={styles.button}

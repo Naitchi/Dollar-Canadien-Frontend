@@ -1,0 +1,174 @@
+.Results {
+  width: 100%;
+  max-width: 520px;
+  margin: 40px auto 0;
+  padding: 40px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.trophy {
+  font-size: 4rem;
+  animation: pop 0.6s ease-out;
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--gold);
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* What the loser(s) or the winner have to do. */
+.stake {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px dashed rgba(245, 197, 66, 0.5);
+  border-radius: 12px;
+  background-color: rgba(245, 197, 66, 0.08);
+}
+
+.stakeLabel {
+  color: var(--text-muted);
+}
+
+.stakeText {
+  margin: 4px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.stakeWho {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.ranking {
+  width: 100%;
+  list-style: none;
+  text-align: left;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rank {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: var(--surface-raised);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.winner {
+  border: 1px solid rgba(245, 197, 66, 0.5);
+}
+
+.place {
+  width: 2rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.you {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.detail {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.actions {
+  margin-top: 12px;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.waiting {
+  color: var(--text-muted);
+}
+
+.button,
+.secondaryButton {
+  -webkit-user-select: none;
+  user-select: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button {
+  background-color: var(--primary);
+  color: white;
+}
+
+.button:hover {
+  background-color: var(--primary-hover);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.secondaryButton:hover {
+  background-color: var(--surface-raised);
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.3) rotate(-20deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.15) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trophy {
+    animation: none;
+  }
+}

@@ -1,0 +1,85 @@
+/* Covers the whole "Dés lancés" box: the dice are thrown from its far end. */
+.stage {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Invisible button laid over a landed die, to select it. */
+.die {
+  position: absolute;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  pointer-events: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-bottom 0.2s ease;
+}
+
+.die:enabled {
+  cursor: pointer;
+}
+
+.die:focus-visible {
+  outline: 3px solid #ffd54f;
+  outline-offset: 2px;
+}
+
+/* Same marker as the old flat dice had; the 3D die rises by the same 5px. */
+.selected {
+  transform: translateY(-5px);
+  border-bottom: 3px solid #ff0000;
+}
+
+/* A die hitting the attack number: raised (like the 3D die, 10px) and glowing red. */
+.hit {
+  transform: translateY(-10px);
+  box-shadow:
+    0 0 0 3px rgba(255, 90, 90, 0.9),
+    0 0 22px rgba(255, 0, 0, 0.7);
+  animation: hitGlow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes hitGlow {
+  from {
+    box-shadow:
+      0 0 0 3px rgba(255, 90, 90, 0.9),
+      0 0 12px rgba(255, 0, 0, 0.5);
+  }
+  to {
+    box-shadow:
+      0 0 0 3px rgba(255, 90, 90, 1),
+      0 0 28px rgba(255, 0, 0, 0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hit {
+    animation: none;
+  }
+}
+
+/* Fallback without WebGL: the old flat dice. */
+.flat {
+  /* font-size is set inline, from the die size */
+  background-color: whitesmoke;
+  color: black;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flat.selected {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

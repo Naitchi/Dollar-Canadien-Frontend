@@ -1,24 +1,34 @@
-.heart {
-  color: pink;
-}
-
 .player {
-  padding: 10px 20px;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: grey;
-  width: 100px;
+  width: 130px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: var(--surface-raised);
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 4px;
 }
 
-.player p {
-  margin: 5px 0;
-  font-size: 16px;
-  font-weight: bold;
+.dead {
+  opacity: 0.5;
+}
+
+.avatar {
+  font-size: 1.4rem;
+}
+
+.name {
+  max-width: 100%;
+  font-weight: 700;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp {
+  font-weight: 700;
 }

@@ -6,6 +6,9 @@ import Modal from '../Modal/Modal';
 // Styles
 import styles from './UsernameModal.module.css';
 
+// Same limit as MAX_USERNAME_LENGTH in the backend, which cuts longer names.
+const MAX_USERNAME_LENGTH = 24;
+
 interface UsernameModalProps {
   isOpen: boolean;
   onSubmit: (username: string) => void;
@@ -37,6 +40,7 @@ const UsernameModal: React.FC<UsernameModalProps> = ({ isOpen, onSubmit }) => {
           onChange={(e) => setUsernameInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && validate()}
           placeholder="Entrez votre pseudonyme"
+          maxLength={MAX_USERNAME_LENGTH}
           className={styles.input}
         />
         <button onClick={validate} className={styles.button}>
