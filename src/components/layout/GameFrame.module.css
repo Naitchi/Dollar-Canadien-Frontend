@@ -1,0 +1,85 @@
+/* The frame shared by the lobby and the board: players on the left, the
+   action on the right (desktop). Nothing jumps when the game starts. */
+.page {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--s-6) var(--gutter) var(--s-10);
+}
+
+.frame {
+  display: grid;
+  grid-template-columns: var(--sidebar) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--s-6);
+}
+
+.sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  max-height: calc(100dvh - var(--header-h) - 32px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+/* Dark players panel (the reference's sidebar) */
+.panel {
+  composes: panel from '../ui/Surface.module.css';
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: var(--s-4) var(--s-3) var(--s-3);
+  gap: var(--s-3);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: 0 var(--s-1) var(--s-3);
+  border-bottom: var(--bw) solid var(--c-chip-strong);
+}
+
+.panelTitle {
+  composes: labelOnDark from '../ui/Surface.module.css';
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 0.8125rem;
+}
+
+.panelList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  overflow-y: auto;
+  min-height: 0;
+  /* Room for the cards' lips and the active ring. */
+  padding: 6px 4px 8px;
+  margin: -6px -4px 0;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 1023px) {
+  .page {
+    padding-top: var(--s-4);
+  }
+
+  .frame {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+}

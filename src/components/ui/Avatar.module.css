@@ -1,0 +1,50 @@
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  box-shadow: 0 3px 0 var(--c-ink);
+  line-height: 1;
+}
+
+.animal {
+  /* Emoji: keep them crisp and centred. */
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+}
+
+.xs {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border-width: 1.5px;
+  box-shadow: none;
+  font-size: 0.8rem;
+}
+
+.sm {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  box-shadow: 0 2px 0 var(--c-ink);
+  font-size: 1.1rem;
+}
+
+.md {
+  width: 44px;
+  height: 44px;
+  font-size: 1.45rem;
+}
+
+.lg {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-lg);
+  box-shadow: var(--lip-md);
+  font-size: 2.1rem;
+}
+
+.dead {
+  background-color: var(--c-inset-strong);
+  filter: grayscale(1);
+}

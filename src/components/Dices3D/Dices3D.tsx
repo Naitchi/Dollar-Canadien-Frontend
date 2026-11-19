@@ -2,11 +2,14 @@ import { RefObject, useEffect, useRef, useState } from 'react';
 
 // Components
 import DiceLockAnimation from '../DiceLockAnimation/DiceLockAnimation';
+import DieFace from '../ui/DieFace';
 
 // Functions
-import { diePxFor, slotsFor } from './diceMath';
+import { DIE_PX, diePxFor, slotsFor } from './diceMath';
 import {
+  HIT_LIFT_PX,
   Row,
+  SELECTED_LIFT_PX,
   Stage,
   createStage,
   disposeStage,
@@ -95,17 +98,28 @@ const Dices3D: React.FC<Dices3DProps> = ({
     }
     stageRef.current = stage;
 
+    // The browser can take the WebGL context back (too many tabs, GPU reset):
+    // the flat dice take over instead of showing nothing.
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      setWebglFailed(true);
+    };
+    const canvas = stage?.renderer.domElement;
+    canvas?.addEventListener('webglcontextlost', handleContextLost);
+
     // Where the row is, relative to this component (the flat fallback needs it too).
     const layout = () => {
       const rootRect = root.getBoundingClientRect();
       const rowRect = rowRef.current?.getBoundingClientRect() ?? rootRect;
       const newRow = {
         left: rowRect.left - rootRect.left,
+        width: rowRect.width,
         centerY: rowRect.top - rootRect.top + rowRect.height / 2,
         diePx: diePxFor(rowRect.width),
       };
       setRow((current) =>
         current?.left === newRow.left &&
+        current.width === newRow.width &&
         current.centerY === newRow.centerY &&
         current.diePx === newRow.diePx
           ? current
@@ -140,6 +154,8 @@ const Dices3D: React.FC<Dices3DProps> = ({
       cancelAnimationFrame(frame);
       observer.disconnect();
       stageRef.current = null;
+      // Before our own forceContextLoss() (in disposeStage): not a real loss.
+      canvas?.removeEventListener('webglcontextlost', handleContextLost);
       if (stage) disposeStage(stage);
     };
   }, [rowRef]);
@@ -169,26 +185,35 @@ const Dices3D: React.FC<Dices3DProps> = ({
           const isSelected = selected.includes(index);
           const isHit = hits.includes(index);
           const canClick = interactive && !!onToggle;
-          const slot = slotsFor(dices.length, row.left, row.centerY, row.diePx)[index];
+          const slot = slotsFor(dices.length, row.left, row.centerY, row.diePx, row.width)[index];
           return (
             <button
               key={index}
               className={`${styles.die} ${flat ? styles.flat : ''} ${
                 isSelected ? styles.selected : ''
               } ${isHit ? styles.hit : ''}`}
-              style={{
-                left: slot.x - row.diePx / 2,
-                top: slot.y - row.diePx / 2,
-                width: row.diePx,
-                height: row.diePx,
-                fontSize: row.diePx * 0.75,
-              }}
+              style={
+                {
+                  left: slot.x - row.diePx / 2,
+                  top: slot.y - row.diePx / 2,
+                  width: row.diePx,
+                  height: row.diePx,
+                  // Same lift as the 3D die (it scales with the die size).
+                  '--lift': `${(row.diePx * SELECTED_LIFT_PX) / DIE_PX}px`,
+                  '--hit-lift': `${(row.diePx * HIT_LIFT_PX) / DIE_PX}px`,
+                } as React.CSSProperties
+              }
               onClick={canClick ? () => onToggle(index) : undefined}
               disabled={!canClick}
               aria-label={`Dé ${index + 1} : ${value}`}
               aria-pressed={interactive ? isSelected : undefined}
             >
-              {flat && value}
+              {flat && <DieFace value={value} size={row.diePx} />}
+              {isSelected && interactive && (
+                <span className={styles.check} aria-hidden="true">
+                  ✓
+                </span>
+              )}
               <DiceLockAnimation show={locking && isSelected} />
             </button>
           );

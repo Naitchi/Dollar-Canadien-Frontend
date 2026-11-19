@@ -1,42 +1,35 @@
 .overlay {
   position: absolute;
-  top: -50px;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeInUpSmooth 0.8s ease-out, fadeOutUpSmooth 0.8s ease-in 700ms forwards;
-  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.lockEmoji {
-  font-size: 2rem;
-  transform: translateY(50px);
-  background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+.stamp {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: var(--bw) solid var(--c-ink);
   border-radius: 50%;
-  padding: 0.5rem;
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  box-shadow: 0 3px 0 var(--c-ink);
+  animation: stamp 420ms var(--ease-spring) both;
 }
 
-@keyframes fadeInUpSmooth {
-  from {
+@keyframes stamp {
+  0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: scale(2.2) rotate(-25deg);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(0.9) rotate(-8deg);
   }
-}
-
-@keyframes fadeOutUpSmooth {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-30px);
+  100% {
+    transform: scale(1) rotate(-8deg);
   }
 }

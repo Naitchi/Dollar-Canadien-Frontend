@@ -1,0 +1,159 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-cinematic);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--s-6);
+  /* Dark enough that the board underneath doesn't compete with the text. */
+  background: radial-gradient(ellipse at center, rgba(12, 24, 39, 0.86) 0%, rgba(12, 24, 39, 0.95) 70%);
+  animation: fade 2000ms ease both;
+}
+
+.heart {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.half {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  animation: crackLeft 1400ms 350ms var(--ease-out) both;
+}
+
+.right {
+  animation-name: crackRight;
+}
+
+.shard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background: #e11d48;
+  border: 2px solid var(--c-ink);
+  opacity: 0;
+  animation: shard 1100ms calc(600ms + var(--i) * 40ms) ease-in both;
+}
+
+.shard:nth-child(3) {
+  --dx: -60px;
+}
+.shard:nth-child(4) {
+  --dx: 50px;
+}
+.shard:nth-child(5) {
+  --dx: -25px;
+}
+.shard:nth-child(6) {
+  --dx: 30px;
+}
+.shard:nth-child(7) {
+  --dx: -80px;
+}
+.shard:nth-child(8) {
+  --dx: 75px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  color: var(--t-on-dark);
+  text-shadow: 0 3px 0 var(--c-ink);
+  animation: textIn 500ms 500ms var(--ease-out) both;
+}
+
+.text span {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--t-on-dark-muted);
+  text-shadow: none;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes crackLeft {
+  0%,
+  20% {
+    transform: none;
+  }
+  35% {
+    transform: translateX(-4px) rotate(-6deg);
+  }
+  100% {
+    transform: translate(-40px, 160px) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes crackRight {
+  0%,
+  20% {
+    transform: none;
+  }
+  35% {
+    transform: translateX(4px) rotate(6deg);
+  }
+  100% {
+    transform: translate(40px, 160px) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shard {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx, 0px)), 200px) rotate(180deg);
+  }
+}
+
+@keyframes textIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Reduced motion: a static broken heart and the text, same duration. */
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    animation: none;
+  }
+
+  .half {
+    animation: none !important;
+    transform: translateX(-6px) rotate(-8deg);
+  }
+
+  .right {
+    transform: translateX(6px) rotate(8deg);
+  }
+
+  .shard {
+    display: none;
+  }
+}

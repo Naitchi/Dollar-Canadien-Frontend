@@ -1,27 +1,43 @@
-.damageBadge {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  background-color: rgb(145, 8, 8);
-  padding: 0.5rem 1.25rem;
-  border-radius: 10px;
-  animation: bounceAnimation 0.5s ease-out forwards;
+.final {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
 }
 
-@keyframes bounceAnimation {
+.damageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 6px 20px;
+  border: var(--bw-strong) solid var(--c-ink);
+  border-radius: var(--r-lg);
+  background: var(--c-orange);
+  color: var(--c-ink);
+  font-size: 2rem;
+  font-weight: var(--fw-bold);
+  line-height: 1.1;
+  box-shadow: 0 5px 0 var(--c-ink);
+  animation: stamp 520ms var(--ease-spring) both;
+}
+
+.caption {
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+}
+
+@keyframes stamp {
   0% {
-    transform: scaleY(1) scaleX(1);
+    opacity: 0;
+    transform: scale(1.8) rotate(-8deg);
   }
-  25% {
-    transform: scaleY(1.5) scaleX(0.8);
-  }
-  50% {
-    transform: scaleY(0.8) scaleX(1.5);
-  }
-  75% {
-    transform: scaleY(1.2) scaleX(1.2);
+  60% {
+    opacity: 1;
+    transform: scale(0.94) rotate(-3deg);
   }
   100% {
-    transform: scaleY(1) scaleX(1);
+    transform: scale(1) rotate(-3deg);
   }
 }

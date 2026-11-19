@@ -174,3 +174,24 @@ describe('diePxFor', () => {
     expect(diePxFor(50)).toBe(24);
   });
 });
+
+describe('slotsFor', () => {
+  it('left-aligns the dice by default, like the old flat dice', () => {
+    const slots = slotsFor(3, 20, 50);
+    expect(slots[0].x).toBe(20 + DIE_PX / 2);
+  });
+
+  it('centres the dice in the row when its width is given', () => {
+    const rowWidth = 800;
+    const slots = slotsFor(3, 20, 50, DIE_PX, rowWidth);
+    const left = slots[0].x - DIE_PX / 2;
+    const right = slots[2].x + DIE_PX / 2;
+    expect(left - 20).toBeCloseTo(20 + rowWidth - right);
+    expect(slots.every((slot) => slot.y === 50)).toBe(true);
+  });
+
+  it('never starts left of the row when the dice are wider than it', () => {
+    const slots = slotsFor(6, 10, 0, DIE_PX, 100);
+    expect(slots[0].x).toBe(10 + DIE_PX / 2);
+  });
+});

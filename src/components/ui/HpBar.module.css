@@ -1,0 +1,22 @@
+.track {
+  display: block;
+  position: relative;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--c-inset-strong);
+  border: 1.5px solid var(--c-ink);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c-heart);
+  transition: width 600ms var(--ease-out);
+}
+
+/* Darker solid red (hatching is reserved for the dice selection). */
+.danger {
+  background: #9f1239;
+}

@@ -1,0 +1,229 @@
+/* The one button of the app. Chunky like the reference: ink outline, solid
+   "lip" under it, rises on hover, sinks into its lip when pressed. Text on
+   candy fills is ink (WCAG AA), never white. */
+.btn {
+  --btn-bg: var(--c-paper);
+  --btn-fg: var(--c-ink);
+  --btn-border: var(--c-ink);
+  --btn-lip: var(--c-ink);
+  --btn-lip-size: 4px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0 var(--s-5);
+  border: var(--bw) solid var(--btn-border);
+  border-radius: var(--r-md);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-body);
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 var(--btn-lip-size) 0 var(--btn-lip);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-med) ease;
+}
+
+@media (hover: hover) {
+  .btn:not([aria-disabled='true']):not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 calc(var(--btn-lip-size) + 2px) 0 var(--btn-lip);
+  }
+}
+
+.btn:not([aria-disabled='true']):not(:disabled):active {
+  transform: translateY(calc(var(--btn-lip-size) - 1px));
+  box-shadow: 0 1px 0 var(--btn-lip);
+}
+
+/* Variants */
+.primary {
+  --btn-bg: var(--c-blue);
+  --btn-lip: var(--c-blue-deep);
+}
+
+.success {
+  --btn-bg: var(--c-green);
+  --btn-lip: var(--c-green-deep);
+}
+
+.danger {
+  --btn-bg: var(--c-red);
+  --btn-lip: var(--c-red-deep);
+}
+
+.yellow {
+  --btn-bg: var(--c-yellow);
+  --btn-lip: var(--c-yellow-deep);
+}
+
+.neutral {
+  --btn-bg: var(--c-paper);
+}
+
+/* Quiet action on paper: no fill, still a clear outline. */
+.quiet {
+  --btn-bg: transparent;
+  --btn-border: var(--c-line-strong);
+  --btn-fg: var(--t-strong);
+  --btn-lip-size: 0px;
+  font-weight: var(--fw-semibold);
+}
+
+.quiet:not([aria-disabled='true']):not(:disabled):hover {
+  --btn-bg: var(--c-inset);
+}
+
+/* On the dark chrome (header). */
+.dark {
+  --btn-bg: var(--c-chip);
+  --btn-fg: var(--t-on-dark);
+  --btn-border: var(--c-ink);
+  --btn-lip: var(--c-chrome-edge);
+  --btn-lip-size: 3px;
+}
+
+.dark:not([aria-disabled='true']):not(:disabled):hover {
+  --btn-bg: var(--c-chip-strong);
+}
+
+.ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--t-on-dark);
+  --btn-border: transparent;
+  --btn-lip-size: 0px;
+  font-weight: var(--fw-semibold);
+}
+
+.ghost:not([aria-disabled='true']):not(:disabled):hover {
+  --btn-bg: var(--c-chip);
+}
+
+/* Sizes */
+.sm {
+  min-height: 36px;
+  padding: 0 var(--s-3);
+  font-size: var(--fs-small);
+  border-radius: var(--r-sm);
+  --btn-lip-size: 3px;
+}
+
+.lg {
+  min-height: 52px;
+  padding: 0 var(--s-6);
+  font-size: 1.0625rem;
+}
+
+/* The main action of a screen (the reference's big blue button). */
+.xl {
+  min-height: 64px;
+  padding: 0 var(--s-8);
+  border-width: var(--bw-strong);
+  border-radius: var(--r-lg);
+  font-size: 1.1875rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  --btn-lip-size: 6px;
+  /* The main action may wrap to two lines rather than lose its words. */
+  white-space: normal;
+  text-wrap: balance;
+  padding-block: 6px;
+}
+
+.xl .label {
+  overflow: visible;
+}
+
+@media (max-width: 399px) {
+  .xl {
+    padding-inline: var(--s-4);
+    font-size: 1.0625rem;
+  }
+
+  .xl .iconPill {
+    display: none;
+  }
+}
+
+.iconOnly {
+  padding: 0;
+  width: 44px;
+}
+
+.iconOnly.sm {
+  width: 36px;
+}
+
+.block {
+  display: flex;
+  width: 100%;
+}
+
+/* Unavailable: looks off, says why elsewhere; still focusable. */
+.btn:disabled,
+.btn[aria-disabled='true']:not(.pending) {
+  --btn-bg: var(--c-inset-strong);
+  --btn-fg: var(--t-muted);
+  --btn-border: #94a3b8;
+  --btn-lip-size: 0px;
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.dark:disabled,
+.dark[aria-disabled='true']:not(.pending) {
+  --btn-bg: transparent;
+  --btn-fg: var(--t-on-dark-muted);
+}
+
+/* Pending: keeps its colours and label, with a spinner, stays put. */
+.btn.pending {
+  cursor: progress;
+  transform: translateY(2px);
+  box-shadow: 0 calc(var(--btn-lip-size) - 2px) 0 var(--btn-lip);
+}
+
+.spinner {
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+/* The pill next to the label, like the reference CTA's arrow. */
+.iconPill {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

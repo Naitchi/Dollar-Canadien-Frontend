@@ -1,31 +1,63 @@
-.gamePage {
-  min-height: 100vh;
-  max-width: 1100px;
-  margin: 0 auto;
-  /* Bottom: room to scroll the page above the floating chat button. */
-  padding: 20px 20px 96px;
+.main {
+  display: block;
+  min-height: calc(100dvh - var(--header-h));
+  outline: none;
+}
 
+/* The stake, in the header (desktop/tablet). */
+.stake {
   display: flex;
-  flex-direction: column;
-  gap: 32px;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 100%;
+  min-width: 0;
+  padding: 6px 14px;
+  border: var(--bw) solid var(--c-chrome-edge);
+  border-radius: var(--r-pill);
+  background: var(--c-chip);
+  color: var(--t-on-dark-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
 }
 
-/* Logo in the header, back to the home page. */
-.homeBtn {
-  -webkit-user-select: none;
-  user-select: none;
-  width: fit-content;
-  margin-left: -10px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+.stakeWho {
+  flex-shrink: 0;
 }
 
-.homeBtn:hover {
-  background-color: var(--surface-raised);
-  color: var(--gold);
+.stakeWhat {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--t-on-dark);
+  font-weight: var(--fw-bold);
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--s-4);
+  min-height: 60vh;
+  color: var(--t-on-dark-muted);
+  font-weight: var(--fw-semibold);
+}
+
+.loadingCoin {
+  animation: flip 1.2s ease-in-out infinite;
+}
+
+@keyframes flip {
+  0%,
+  100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+}
+
+@media (max-width: 899px) {
+  .stakeWho {
+    display: none;
+  }
 }

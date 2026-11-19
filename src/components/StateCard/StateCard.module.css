@@ -1,0 +1,44 @@
+.wrap {
+  display: grid;
+  place-items: center;
+  padding: var(--s-10) var(--gutter);
+}
+
+.card {
+  composes: board from '../ui/Surface.module.css';
+  width: min(520px, 100%);
+  padding: var(--s-8) var(--s-6) var(--s-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-4);
+  text-align: center;
+}
+
+.mascot {
+  filter: drop-shadow(0 4px 0 var(--c-ink));
+}
+
+.error .mascot {
+  transform: rotate(-14deg);
+}
+
+.title {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+  line-height: 1.2;
+}
+
+.body {
+  max-width: 40ch;
+  color: var(--t-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}

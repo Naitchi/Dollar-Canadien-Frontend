@@ -33,13 +33,17 @@ import { createFaceTexture } from './faceTextures';
 // The three.js side of Dices3D, without React: the scene, where the dice
 // land, throwing them and moving them frame by frame.
 
-// A selected die rises by this much, like the old flat ones (translateY(-5px)).
-const SELECTED_LIFT_PX = 5;
+// A selected die rises by this much (for a DIE_PX die: it scales with the
+// die size). The HTML overlay of a die uses the same ratio, so its selection
+// ring follows the 3D die exactly.
+export const SELECTED_LIFT_PX = 5;
 // A die hitting the attack number rises higher (the .hit overlay follows it).
-const HIT_LIFT_PX = 10;
+export const HIT_LIFT_PX = 10;
 
 export interface Row {
   left: number;
+  // The dice are centred in the row.
+  width: number;
   centerY: number;
   // Size of the dice, so that 6 of them fit in the row.
   diePx: number;
@@ -76,15 +80,16 @@ export const createStage = (root: HTMLElement, canvasClassName: string): Stage =
   root.prepend(renderer.domElement);
 
   const scene = new Scene();
-  // Sky light, slightly green from below like the felt of the table.
-  scene.add(new HemisphereLight(0xffffff, 0x3d6b33, 1.6));
-  const light = new DirectionalLight(0xffffff, 2.2);
+  // Bright, soft sky light (slightly mint from below, like the mat): the faces
+  // read almost flat, like the stickers of the rest of the interface.
+  scene.add(new HemisphereLight(0xffffff, 0xbfe9d2, 2.1));
+  const light = new DirectionalLight(0xffffff, 1.7);
   light.castShadow = true;
   light.shadow.mapSize.set(1024, 1024);
   light.shadow.radius = 4; // soft shadow edges
   scene.add(light, light.target);
   // Invisible table that only shows the dice shadows.
-  const floor = new Mesh(new PlaneGeometry(1, 1), new ShadowMaterial({ opacity: 0.3 }));
+  const floor = new Mesh(new PlaneGeometry(1, 1), new ShadowMaterial({ opacity: 0.32, color: 0x111e2e }));
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
@@ -119,7 +124,7 @@ export const layoutStage = (stage: Stage, width: number, height: number, row: Ro
   setupCamera(camera, width, height);
 
   const count = Math.max(stage.dice.length, 1);
-  const slots = slotsFor(count, row.left, row.centerY, row.diePx);
+  const slots = slotsFor(count, row.left, row.centerY, row.diePx, row.width);
   stage.layout = fitLayout(camera, width, height, slots, row.diePx);
   stage.dirty = true;
   if (!stage.layout) {

@@ -1,0 +1,97 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--c-chrome);
+  border-bottom: var(--bw-strong) solid var(--c-chrome-edge);
+  padding-top: env(safe-area-inset-top);
+}
+
+.inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  height: var(--header-h);
+  padding: 0 var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+/* The reference's blue logo pill. */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 4px 14px 4px 5px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-blue);
+  color: var(--c-ink);
+  text-decoration: none;
+  box-shadow: 0 4px 0 var(--c-chrome-edge);
+  flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.logo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--c-chrome-edge);
+}
+
+.logo:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--c-chrome-edge);
+}
+
+.coin {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.wordmark {
+  font-weight: var(--fw-bold);
+  font-size: 1.0625rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+  .wordmark {
+    font-size: 0.9375rem;
+  }
+
+  .center {
+    display: none;
+  }
+}
+
+@media (max-width: 379px) {
+  .wordmark {
+    display: none;
+  }
+
+  .logo {
+    padding-right: 5px;
+  }
+}

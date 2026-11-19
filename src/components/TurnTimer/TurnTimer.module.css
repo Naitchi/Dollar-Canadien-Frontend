@@ -1,33 +1,60 @@
-.timer {
-  margin: 0;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  background-color: var(--surface-raised);
-  font-weight: bold;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+/* The reference's yellow timer disc. */
+.disc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border: var(--bw-strong) solid var(--c-ink);
+  border-radius: 50%;
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  box-shadow: 0 4px 0 var(--c-yellow-deep);
+  line-height: 1;
 }
 
+.label {
+  font-size: 0.75rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+
+.value {
+  /* Fredoka has no tabular figures: a fixed box keeps the disc still. */
+  display: inline-block;
+  min-width: 2ch;
+  text-align: center;
+  font-size: 1.375rem;
+  font-weight: var(--fw-bold);
+}
+
+/* Static (no endless pulse): red, with "Vite !". */
 .urgent {
-  border-color: #ff6b6b;
-  background-color: #8b2e2e;
-  animation: pulse 1s ease-in-out infinite;
+  background: var(--c-red);
+  box-shadow: 0 4px 0 var(--c-red-deep);
+  animation: nudge 600ms ease-in-out 2;
 }
 
-@keyframes pulse {
+@media (max-height: 500px) and (orientation: landscape) {
+  .disc {
+    width: 52px;
+    height: 52px;
+  }
+
+  .value {
+    font-size: 1.125rem;
+  }
+}
+
+@keyframes nudge {
   0%,
   100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.06);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .urgent {
-    animation: none;
+    transform: scale(1.1);
   }
 }

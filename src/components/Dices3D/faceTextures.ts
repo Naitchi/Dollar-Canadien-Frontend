@@ -1,41 +1,36 @@
 import { CanvasTexture, SRGBColorSpace } from 'three';
 
-// Same color as the old flat dice.
-const DIE_COLOR = '#f5f5f5';
+import { MAPLE_LEAF_POINTS } from '../ui/Brand';
+import { PIPS } from '../ui/DieFace';
 
-// Pip positions on a face, as fractions of its width/height.
-const PIPS: Record<number, [number, number][]> = {
-  1: [[0.5, 0.5]],
-  2: [
-    [0.27, 0.27],
-    [0.73, 0.73],
-  ],
-  3: [
-    [0.27, 0.27],
-    [0.5, 0.5],
-    [0.73, 0.73],
-  ],
-  4: [
-    [0.27, 0.27],
-    [0.73, 0.27],
-    [0.27, 0.73],
-    [0.73, 0.73],
-  ],
-  5: [
-    [0.27, 0.27],
-    [0.73, 0.27],
-    [0.5, 0.5],
-    [0.27, 0.73],
-    [0.73, 0.73],
-  ],
-  6: [
-    [0.27, 0.25],
-    [0.27, 0.5],
-    [0.27, 0.75],
-    [0.73, 0.25],
-    [0.73, 0.5],
-    [0.73, 0.75],
-  ],
+// Same art as the flat dice (ui/DieFace): white face, ink outline, navy pips,
+// and a red maple leaf for the 1. The outline is drawn at the edge of every
+// face, so the die's silhouette stands out from the light mat.
+const DIE_COLOR = '#ffffff';
+const INK = '#111e2e';
+const PIP_COLOR = '#1e293b';
+const LEAF_COLOR = '#ff4757';
+const SIZE = 256;
+const BORDER = 22;
+
+const drawLeaf = (context: CanvasRenderingContext2D) => {
+  // The leaf is drawn in a 100×100 box, centred on the face.
+  const scale = 1.25;
+  const offset = (SIZE - 100 * scale) / 2;
+  context.beginPath();
+  MAPLE_LEAF_POINTS.forEach(([x, y], index) => {
+    const px = offset + x * scale;
+    const py = offset + y * scale + 4;
+    if (index === 0) context.moveTo(px, py);
+    else context.lineTo(px, py);
+  });
+  context.closePath();
+  context.fillStyle = LEAF_COLOR;
+  context.fill();
+  context.lineJoin = 'round';
+  context.lineWidth = 9;
+  context.strokeStyle = INK;
+  context.stroke();
 };
 
 /**
@@ -46,17 +41,30 @@ const PIPS: Record<number, [number, number][]> = {
  */
 export const createFaceTexture = (value: number): CanvasTexture => {
   const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 256;
+  canvas.width = SIZE;
+  canvas.height = SIZE;
   const context = canvas.getContext('2d')!;
+  // Ink edge, then the white face inside it.
+  context.fillStyle = INK;
+  context.fillRect(0, 0, SIZE, SIZE);
   context.fillStyle = DIE_COLOR;
-  context.fillRect(0, 0, 256, 256);
-  // Like on most real dice, the single pip of the 1 is bigger and red.
-  context.fillStyle = value === 1 ? '#c0392b' : '#1b1b1b';
-  for (const [x, y] of PIPS[value]) {
-    context.beginPath();
-    context.arc(x * 256, y * 256, value === 1 ? 36 : 23, 0, Math.PI * 2);
-    context.fill();
+  context.beginPath();
+  if (typeof context.roundRect === 'function') {
+    context.roundRect(BORDER, BORDER, SIZE - 2 * BORDER, SIZE - 2 * BORDER, 34);
+  } else {
+    context.rect(BORDER, BORDER, SIZE - 2 * BORDER, SIZE - 2 * BORDER);
+  }
+  context.fill();
+
+  if (value === 1) {
+    drawLeaf(context);
+  } else {
+    context.fillStyle = PIP_COLOR;
+    for (const [x, y] of PIPS[value]) {
+      context.beginPath();
+      context.arc(BORDER + x * (SIZE - 2 * BORDER), BORDER + y * (SIZE - 2 * BORDER), 21, 0, Math.PI * 2);
+      context.fill();
+    }
   }
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;

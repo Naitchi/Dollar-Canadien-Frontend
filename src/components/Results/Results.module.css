@@ -1,156 +1,192 @@
-.Results {
-  width: 100%;
-  max-width: 520px;
-  margin: 40px auto 0;
-  padding: 40px 24px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background-color: var(--surface);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  text-align: center;
+.page {
+  padding: var(--s-8) var(--gutter) var(--s-10);
+}
 
+.Results {
+  composes: board from '../ui/Surface.module.css';
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+.hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-1);
+  text-align: center;
+}
+
+.winnerAvatar {
+  position: relative;
+  margin-bottom: var(--s-3);
+  animation: pop 0.6s var(--ease-spring) both;
 }
 
 .trophy {
-  font-size: 4rem;
-  animation: pop 0.6s ease-out;
+  position: absolute;
+  right: -18px;
+  top: -16px;
+  font-size: 2rem;
+  transform: rotate(14deg);
 }
 
 .title {
-  font-size: 2rem;
-  color: var(--gold);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-bold);
+  line-height: 1.05;
+  color: var(--t-strong);
   overflow-wrap: anywhere;
+  outline: none;
+}
+
+.kicker {
+  display: inline-block;
+  margin-top: var(--s-2);
+  padding: 2px 12px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  transform: rotate(-2deg);
 }
 
 .subtitle {
-  color: var(--text-muted);
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  margin-top: var(--s-2);
+  font-size: 1.125rem;
+  font-weight: var(--fw-semibold);
+  color: var(--t-body);
 }
 
-/* What the loser(s) or the winner have to do. */
+/* The gage: the payoff of the evening, first after the headline. */
 .stake {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1px dashed rgba(245, 197, 66, 0.5);
-  border-radius: 12px;
-  background-color: rgba(245, 197, 66, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-4) var(--s-5);
+  border: var(--bw) dashed var(--c-tray-edge);
+  border-radius: var(--r-lg);
+  background: var(--c-tray);
+  text-align: center;
 }
 
 .stakeLabel {
-  color: var(--text-muted);
-}
-
-.stakeText {
-  margin: 4px 0;
-  font-size: 1.3rem;
-  font-weight: 700;
-  overflow-wrap: anywhere;
+  composes: label from '../ui/Surface.module.css';
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--t-warning);
 }
 
 .stakeWho {
-  color: var(--gold);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+  overflow-wrap: anywhere;
+}
+
+.stakeText {
+  margin-bottom: var(--s-2);
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  color: var(--t-strong);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.replayHint {
+  margin-top: var(--s-2);
+  text-align: center;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--t-muted);
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--c-inset);
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+}
+
+.rankingBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.rankingTitle {
+  composes: labelOnPaper from '../ui/Surface.module.css';
+  font-size: 0.8125rem;
 }
 
 .ranking {
-  width: 100%;
   list-style: none;
-  text-align: left;
-
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
 }
 
 .rank {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background-color: var(--surface-raised);
-
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-paper-alt);
+  color: var(--t-strong);
 }
 
 .winner {
-  border: 1px solid rgba(245, 197, 66, 0.5);
+  background: var(--c-danger-fill);
+  box-shadow: 0 3px 0 var(--c-ink);
 }
 
 .place {
   width: 2rem;
+  flex-shrink: 0;
   text-align: center;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: var(--fw-bold);
+}
+
+/* Name with its detail underneath (kept on phones). */
+.who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
 }
 
 .name {
-  flex: 1;
-  min-width: 0;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.you {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
 .detail {
-  flex-shrink: 0;
-  color: var(--text-muted);
-}
-
-.actions {
-  margin-top: 12px;
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.waiting {
-  color: var(--text-muted);
-}
-
-.button,
-.secondaryButton {
-  -webkit-user-select: none;
-  user-select: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  border: none;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.button {
-  background-color: var(--primary);
-  color: white;
-}
-
-.button:hover {
-  background-color: var(--primary-hover);
-}
-
-.secondaryButton {
-  background-color: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.secondaryButton:hover {
-  background-color: var(--surface-raised);
+  color: var(--t-muted);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
 }
 
 @keyframes pop {
@@ -159,7 +195,7 @@
     opacity: 0;
   }
   70% {
-    transform: scale(1.15) rotate(5deg);
+    transform: scale(1.12) rotate(5deg);
     opacity: 1;
   }
   100% {
@@ -167,8 +203,13 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .trophy {
-    animation: none;
+@media (max-width: 599px) {
+  .page {
+    padding-top: var(--s-4);
+  }
+
+  .Results {
+    padding: var(--s-4);
+    gap: var(--s-4);
   }
 }

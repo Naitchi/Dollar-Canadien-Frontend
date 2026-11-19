@@ -1,20 +1,23 @@
 import React from 'react';
 
+import Icon from '../ui/Icon';
 import styles from './DiceLockAnimation.module.css';
 
 interface DiceLockAnimationProps {
   show: boolean;
 }
 
-// TODO refaire l'animation pour que le U inverse se lock et pas juste un emoji
-
+// A padlock stamped on each die being kept, during the lock delay (the dice
+// only move to the tray once the server confirms).
 const DiceLockAnimation: React.FC<DiceLockAnimationProps> = ({ show }) => {
   if (!show) return null;
 
   return (
-    <div className={styles.overlay}>
-      <span className={styles.lockEmoji}>🔒</span>
-    </div>
+    <span className={styles.overlay} aria-hidden="true">
+      <span className={styles.stamp}>
+        <Icon name="lock" size={18} strokeWidth={3} />
+      </span>
+    </span>
   );
 };
 

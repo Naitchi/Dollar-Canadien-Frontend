@@ -1,248 +1,873 @@
-.Board {
-  margin-top: 48px; /* room for the active player badge, above the box */
-
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.page {
+  padding-bottom: var(--s-8);
 }
 
-.dicesBox {
-  position: relative;
-  padding: 44px 20px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background-color: var(--surface);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-
+/* ---------- Turn card (the reference's "Tour actuel") ---------- */
+.turnCard {
+  composes: paper from '../ui/Surface.module.css';
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  transition: background-color var(--dur-med) ease;
 }
 
-.activePlayer {
-  position: absolute;
-  top: -40px;
-  left: 16px;
-  z-index: 10;
-  max-width: 45%;
-  padding: 8px 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  background-color: var(--surface-raised);
+/* Our turn: yellow until it ends (the lasting signal). */
+.turnMine {
+  background: var(--c-yellow);
+}
 
+.turnIcon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-green);
+  color: var(--c-ink);
+  box-shadow: 0 4px 0 var(--c-green-deep);
+}
+
+.turnMine .turnIcon {
+  background: var(--c-paper);
+  box-shadow: 0 4px 0 var(--c-ink);
+}
+
+.turnText {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 2px;
 }
 
-.activePlayer p {
-  font-weight: 700;
+.turnLabel {
+  composes: labelOnPaper from '../ui/Surface.module.css';
 }
 
-.avatar {
-  font-size: 1.3rem;
+.turnMine .turnLabel {
+  color: var(--c-ink);
 }
 
-.name {
-  max-width: 100%;
-  white-space: nowrap;
+.turnTitle {
+  font-size: 1.375rem;
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  color: var(--t-strong);
+  outline: none;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* The active player takes damage (score under 30): hit when the badge appears. */
-.hurt {
-  animation: hurt 0.6s ease-in-out 0.9s;
+.turnName {
+  color: var(--t-link);
 }
 
-@keyframes hurt {
+.turnSub {
+  font-size: var(--fs-small);
+  color: var(--t-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.turnMine .turnSub {
+  color: var(--c-ink);
+}
+
+.turnNext {
+  white-space: nowrap;
+}
+
+.turnNext strong {
+  color: var(--t-strong);
+}
+
+.turnStats {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-shrink: 0;
+}
+
+.keptBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 76px;
+  padding: 6px 10px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-inset);
+  line-height: 1.1;
+}
+
+.keptLabel {
+  composes: label from '../ui/Surface.module.css';
+  color: var(--t-muted);
+}
+
+.keptValue {
+  font-size: 1.125rem;
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+}
+
+.keptMax {
+  color: var(--t-muted);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---------- Spectator / eliminated ---------- */
+.spectator {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border: var(--bw) dashed var(--t-on-dark-muted);
+  border-radius: var(--r-md);
+  color: var(--t-on-dark);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---------- Board card ---------- */
+.board {
+  padding: var(--s-5);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'mat'
+    'tray'
+    'actions';
+  gap: var(--s-5);
+}
+
+.matSection {
+  grid-area: mat;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: 24px;
+}
+
+.sectionHint {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--t-muted);
+}
+
+.kbd {
+  padding: 0 6px;
+  border: 1.5px solid var(--c-line-strong);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--t-muted);
+}
+
+/*
+ * The mat. Contract with Dices3D (see Dices3D/diceMath.ts):
+ * - position: relative, Dices3D as a direct child (its stage covers the mat);
+ * - the row is NOT positioned, has the mat's full content width, and sits low
+ *   enough (≥55px from the top, well below the ~12% horizon) for the dice to
+ *   be thrown in from the far end;
+ * - no transform/filter/contain on the row or between it and the mat.
+ */
+.mat {
+  position: relative;
+  height: 210px;
+  padding: 0 var(--s-4) 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: var(--bw) solid var(--c-mat-edge);
+  border-radius: var(--r-lg);
+  background: var(--c-mat);
+}
+
+.row {
+  width: 100%;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+
+.matEmpty {
+  width: 100%;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: var(--fw-bold);
+  color: var(--t-success);
+}
+
+.attackBar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-blue-tint);
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+}
+
+.attackCount {
+  margin-left: auto;
+  font-weight: var(--fw-bold);
+}
+
+.hitList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.hit,
+.hitNone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 6px 12px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-danger-fill);
+  color: var(--t-strong);
+  box-shadow: 0 3px 0 var(--c-ink);
+  animation: pop 320ms var(--ease-spring) both;
+}
+
+.hitNone {
+  background: var(--c-inset);
+}
+
+.hitAmount {
+  font-weight: var(--fw-bold);
+  color: var(--t-danger);
+}
+
+.hitKo {
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--c-ink);
+  color: var(--t-on-dark);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+}
+
+/* ---------- Locked tray ---------- */
+.tray {
+  grid-area: tray;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.lockBadge {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: 50%;
+  background: var(--c-yellow);
+  color: var(--c-ink);
+}
+
+.trayCount {
+  font-size: var(--fs-small);
+  color: var(--t-muted);
+  white-space: nowrap;
+}
+
+.trayCount strong {
+  color: var(--t-strong);
+  font-size: var(--fs-body);
+}
+
+.trayZone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 66px;
+  padding: var(--s-3) var(--s-4);
+  border: var(--bw) dashed var(--c-tray-edge);
+  border-radius: var(--r-lg);
+  background: var(--c-tray);
+}
+
+.trayDice {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.trayPop {
+  animation: pop 300ms var(--ease-spring) both;
+}
+
+.trayEmpty {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-small);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--t-warning);
+  pointer-events: none;
+}
+
+/* The "30" label sits above the notch: never under the sticky button. */
+.meter {
+  position: relative;
+  height: 10px;
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-inset-strong);
+  margin-top: 8px;
+}
+
+.meterLocked,
+.meterSelected {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: var(--r-pill);
+  transition: width 260ms var(--ease-out), left 260ms var(--ease-out);
+}
+
+.meterLocked {
+  background: var(--c-ink);
+}
+
+.meterSelected {
+  background: repeating-linear-gradient(-45deg, var(--c-blue-deep) 0 4px, var(--c-blue) 4px 8px);
+}
+
+.meterNotch {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--c-ink);
+  border-radius: 2px;
+}
+
+.meterNotch span {
+  position: absolute;
+  bottom: calc(100% + 1px);
+  left: 50%;
+  line-height: 1;
+  transform: translateX(-50%);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+}
+
+/* ---------- Actions ---------- */
+.actions {
+  grid-area: actions;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.actions > button {
+  max-width: 420px;
+}
+
+.helper {
+  min-height: 1.4em;
+  text-align: center;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--t-muted);
+}
+
+.helperAlert {
+  color: var(--t-danger);
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--c-inset);
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+  text-align: left;
+}
+
+/* ---------- Players: rail (desktop) / strip (phone) ---------- */
+.rail {
+  display: flex;
+}
+
+.rail > * {
+  flex: 1;
+}
+
+.strip {
+  display: none;
+}
+
+.stripList {
+  display: flex;
+  gap: var(--s-2);
+  min-width: 0;
+  flex: 1;
+}
+
+.chip {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-paper-alt);
+  color: var(--t-strong);
+  box-shadow: 0 2px 0 var(--c-ink);
+}
+
+.chipActive {
+  outline: 3px solid var(--c-blue);
+  outline-offset: 1px;
+}
+
+.chipDanger {
+  background: var(--c-danger-fill);
+  border-color: var(--c-coral);
+}
+
+.chipHit {
+  animation: shake 520ms ease-in-out;
+}
+
+.chipText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.chipName {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipMeta {
+  display: flex;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: var(--fw-semibold);
+  color: var(--t-muted);
+  white-space: nowrap;
+}
+
+.chipHp {
+  flex-shrink: 0;
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+}
+
+.chipRole {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.chipDanger .chipMeta {
+  color: var(--t-danger);
+}
+
+.stripAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 10px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-chip);
+  color: var(--t-on-dark);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  box-shadow: 0 2px 0 var(--c-chrome-edge);
+}
+
+.flipped {
+  transform: rotate(180deg);
+}
+
+.stripPanel {
+  flex-basis: 100%;
+  padding: var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-lg);
+  background: var(--c-chrome);
+}
+
+.stripPanel[hidden] {
+  display: none;
+}
+
+.stripPanelList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+/* ---------- Turn slam ---------- */
+.slamLayer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-effects);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.slam {
+  padding: var(--s-4) var(--s-8);
+  border: var(--bw-strong) solid var(--c-ink);
+  border-radius: var(--r-lg);
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  font-size: clamp(2rem, 1.2rem + 4vw, 3.5rem);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  box-shadow: 0 8px 0 var(--c-ink);
+  animation: slam 1100ms var(--ease-spring) both;
+}
+
+@keyframes slam {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-12deg);
+  }
+  22% {
+    opacity: 1;
+    transform: scale(0.95) rotate(-5deg);
+  }
+  32%,
+  78% {
+    opacity: 1;
+    transform: scale(1) rotate(-6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-40px) rotate(-6deg);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes shake {
   0%,
   100% {
     transform: translateX(0);
   }
-  20% {
-    transform: translateX(-6px);
-    background-color: var(--damage);
+  25% {
+    transform: translateX(-5px);
   }
-  40% {
-    transform: translateX(6px);
+  50% {
+    transform: translateX(5px);
   }
-  60% {
-    transform: translateX(-4px);
-    background-color: var(--damage);
-  }
-  80% {
-    transform: translateX(4px);
+  75% {
+    transform: translateX(-3px);
   }
 }
 
-.timerSlot {
-  position: absolute;
-  top: -20px;
-  right: 16px;
-  z-index: 10;
-}
-
-.dicesContainer {
-  width: 100%;
-
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 16px;
-}
-
-.dicesLaunched,
-.dicesLocked {
-  position: relative; /* the 3D dice (Dices3D) cover the whole box */
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 16px 20px 12px;
-  border-radius: 12px;
-  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.25);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.dicesLaunched {
-  background-color: var(--felt);
-}
-
-.dicesLocked {
-  background-color: var(--wood);
-}
-
-.boxTitle {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.dices {
-  height: 100px;
-
-  display: flex;
-  align-items: center;
-}
-
-.rollButton,
-.lockButton {
-  font-size: 1.2rem;
-  font-weight: bold;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease,
-    opacity 0.2s ease;
-}
-
-.rollButton {
-  background-color: var(--primary);
-  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
-}
-
-.rollButton:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.4);
-}
-
-.lockButton {
-  background-color: var(--success);
-  box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
-}
-
-.lockButton:hover {
-  background-color: var(--success-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(40, 167, 69, 0.4);
-}
-
-/* No die selected yet: still clickable, to explain what's missing. */
-.lockButton.idle {
-  opacity: 0.6;
-}
-
-.lockArea {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-/* Bubble above the lock button. */
-.lockHint {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  width: max-content;
-  max-width: 80vw;
-  padding: 8px 14px;
-  border-radius: 10px;
-  background-color: var(--surface-raised);
-  border: 1px solid var(--border);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-  font-weight: 500;
-  text-align: center;
-  z-index: 20;
-  animation: hintIn 0.25s ease-out;
-}
-
-.lockHint::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top-color: var(--surface-raised);
-}
-
-@keyframes hintIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
+/* ---------- Tablet & phone ---------- */
+@media (max-width: 1023px) {
+  .rail {
+    display: none;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: var(--s-2);
   }
 }
 
-.rollButton:active,
-.lockButton:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.playersBox {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-}
-
-@media (max-width: 700px) {
-  .dicesContainer {
-    flex-direction: column;
+@media (max-width: 599px) {
+  .page {
+    padding-inline: 10px;
+    padding-bottom: var(--s-4);
   }
 
-  .activePlayer {
-    left: 8px;
+  .turnCard {
+    gap: var(--s-3);
+    padding: var(--s-2) var(--s-3);
   }
 
-  .timerSlot {
-    right: 8px;
+  .turnIcon {
+    display: none;
+  }
+
+  .turnTitle {
+    font-size: 1.1875rem;
+  }
+
+  .keptBox {
+    min-width: 0;
+    padding: 4px 8px;
+  }
+
+  .board {
+    padding: var(--s-3) 6px var(--s-3);
+    gap: var(--s-3);
+  }
+
+  .sectionHead {
+    padding: 0 6px;
+  }
+
+  .sectionHint {
+    display: none;
+  }
+
+  /* 150px mat: ≥55px above the dice centre, dice ≥44px from 360px wide. */
+  .mat {
+    height: 150px;
+    padding: 0 6px 20px;
+  }
+
+  .row {
+    height: 56px;
+  }
+
+  .trayZone {
+    min-height: 54px;
+    padding: var(--s-2) var(--s-3);
+  }
+
+  .trayDice li svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .trayEmpty {
+    font-size: 0.75rem;
+  }
+
+  .tray .sectionHead,
+  .meter {
+    margin-inline: 6px;
+  }
+
+  /* The main button stays reachable at the bottom of the screen. */
+  .actions {
+    position: sticky;
+    bottom: 0;
+    z-index: var(--z-sticky);
+    margin: 0 -6px calc(-1 * var(--s-3));
+    padding: var(--s-3) var(--s-3) calc(var(--s-3) + env(safe-area-inset-bottom));
+    background: var(--c-paper);
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+    border-top: var(--bw) solid var(--c-inset-strong);
+  }
+
+  .attackBar,
+  .hitList {
+    margin-inline: 6px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hurt {
-    animation: none;
+@media (max-width: 479px) {
+  .chip:nth-child(3) {
+    display: none;
+  }
+
+  .turnSub {
+    white-space: normal;
+  }
+
+  /* "Ensuite : X" on its own line rather than cut. */
+  .turnSep {
+    display: none;
+  }
+
+  .turnNext {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 419px) {
+  .stripAllText {
+    display: none;
+  }
+}
+
+/* ---------- Landscape phones: two columns, no scrolling ---------- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page {
+    padding-top: var(--s-2);
+    padding-bottom: var(--s-2);
+  }
+
+  /* Players stay visible: the strip sits next to the turn bar. */
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    align-items: stretch;
+    gap: var(--s-2) var(--s-3);
+  }
+
+  .main > :not(.strip):not(.turnCard) {
+    grid-column: 1 / -1;
+  }
+
+  .strip {
+    position: relative;
+    flex-wrap: nowrap;
+    max-width: 50vw;
+  }
+
+  .stripList {
+    flex: 0 1 auto;
+  }
+
+  .chip {
+    flex: 0 1 150px;
+  }
+
+  .chip:nth-child(3) {
+    display: none;
+  }
+
+  .stripAllText {
+    display: none;
+  }
+
+  .stripPanel {
+    position: absolute;
+    z-index: var(--z-sticky);
+    width: min(360px, 90vw);
+    margin-top: 52px;
+  }
+
+  .turnCard {
+    padding: 6px var(--s-3);
+  }
+
+  .turnIcon,
+  .turnSub,
+  .turnLabel {
+    display: none;
+  }
+
+  .turnTitle {
+    font-size: 1.125rem;
+  }
+
+  .keptBox {
+    flex-direction: row;
+    gap: 6px;
+    padding: 4px 10px;
+  }
+
+  .board {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-areas:
+      'mat tray'
+      'mat actions';
+    align-items: start;
+    gap: var(--s-2) var(--s-4);
+    padding: var(--s-3);
+  }
+
+  .matSection {
+    gap: 6px;
+  }
+
+  .mat {
+    height: 150px;
+    padding-bottom: 20px;
+  }
+
+  .row {
+    height: 58px;
+  }
+
+  .tray {
+    gap: 6px;
+  }
+
+  .trayZone {
+    min-height: 48px;
+    padding: 6px var(--s-3);
+  }
+
+  .trayDice li svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .meter {
+    margin-top: 10px;
+  }
+
+  .actions {
+    position: static;
+    margin: 0;
+    padding: 0;
+    border: none;
+    gap: 4px;
+  }
+
+  .actions > button {
+    min-height: 52px;
+    font-size: 1rem;
+  }
+
+  .helper {
+    font-size: 0.8125rem;
   }
 }

@@ -1,235 +1,395 @@
-.lobby {
-  width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.page {
+  /* Room under the content for the sticky action bar. */
+  padding-bottom: var(--s-6);
 }
 
-.card {
-  padding: 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background-color: var(--surface);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-
+.head {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.cardHeader {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  gap: var(--s-1);
 }
 
 .title {
-  font-size: 1.6rem;
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: 1.15;
+  color: var(--t-on-dark);
+}
+
+.title span {
+  color: var(--c-yellow);
+  overflow-wrap: anywhere;
 }
 
 .subtitle {
-  font-size: 1.2rem;
+  color: var(--t-on-dark-muted);
 }
 
-.count,
-.hint,
-.status {
-  color: var(--text-muted);
-}
-
-.status {
-  text-align: center;
-}
-
-.inviteRow {
-  display: flex;
-  gap: 8px;
-}
-
-.input {
-  width: 100%;
-  min-width: 0;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background-color: var(--bg);
-  color: var(--text);
-}
-
-.input:disabled {
-  opacity: 0.6;
-}
-
-.players {
-  list-style: none;
-
+.section {
+  padding: var(--s-5);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-4);
 }
 
-.playerRow {
-  padding: 10px 12px;
-  border-radius: 10px;
-  background-color: var(--surface-raised);
+.sectionText {
+  color: var(--t-body);
+}
 
+/* Invite */
+.inviteRow {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+}
+
+.inviteInput {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--t-body);
+  background: var(--c-paper-alt);
+}
+
+.inviteButtons {
+  display: flex;
+  gap: var(--s-2);
+  flex-shrink: 0;
+}
+
+/* Players */
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.ghostSeat {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: var(--bw) dashed var(--c-chip-strong);
+  border-radius: var(--r-md);
+  color: var(--t-on-dark-muted);
+  font-weight: var(--fw-semibold);
 }
 
-.avatar {
-  font-size: 1.2rem;
-}
-
-.playerName {
-  flex: 1;
-  min-width: 0;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.you {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-.badge {
-  flex-shrink: 0;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background-color: var(--border);
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.ready {
-  background-color: rgba(40, 167, 69, 0.2);
-  color: #6fdc8c;
-}
-
-.hostBadge {
-  background-color: rgba(245, 197, 66, 0.15);
-  color: var(--gold);
-}
-
-.kickButton {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background-color: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.kickButton:hover {
-  background-color: rgba(192, 57, 43, 0.2);
-  color: #ff8a80;
-}
-
-.stakeRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.stakeTarget {
-  width: auto;
-}
-
-.stakeVerb {
-  font-weight: 400;
-  color: var(--text-muted);
-}
-
-.stakeText {
-  flex: 1;
-  min-width: 180px;
-}
-
-.rules {
+.ghostAvatar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: var(--bw) dashed var(--c-chip-strong);
+  border-radius: var(--r-md);
+  font-size: 1.4rem;
+}
+
+.kick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 36px;
+  min-width: 36px;
+  padding: 0 var(--s-2);
+  border: var(--bw) solid var(--c-line-strong);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--t-muted);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+}
+
+.kick:hover {
+  border-color: var(--c-ink);
+  color: var(--t-strong);
+}
+
+.kickArmed {
+  border-color: var(--c-ink);
+  background: var(--c-red);
+  color: var(--c-ink);
+  box-shadow: 0 2px 0 var(--c-ink);
+}
+
+/* Rules */
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
 }
 
 .rule {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-weight: 500;
+  gap: var(--s-3);
 }
 
-.actions {
+.inlineField {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: var(--s-2);
 }
 
-.primaryButton,
-.secondaryButton,
-.quitButton {
-  padding: 0.7rem 1.4rem;
-  border-radius: 8px;
-  border: none;
-  font-weight: 700;
+.numberInput {
+  max-width: 160px;
+}
+
+.more summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  font-weight: var(--fw-semibold);
+  color: var(--t-strong);
   cursor: pointer;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  list-style: none;
 }
 
-.primaryButton {
-  background-color: var(--primary);
-  color: white;
+.more summary::-webkit-details-marker {
+  display: none;
 }
 
-.primaryButton:hover:enabled {
-  background-color: var(--primary-hover);
+.more[open] summary {
+  margin-bottom: var(--s-2);
 }
 
-.primaryButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.chevron {
+  transition: transform var(--dur-med) ease;
 }
 
-.secondaryButton {
+details[open] > summary .chevron {
+  transform: rotate(180deg);
+}
+
+/* Read-only rules (guests): plain facts, not greyed-out inputs. */
+.facts {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--s-3);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--c-inset-strong);
+}
+
+.fact:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.fact dt {
+  font-weight: var(--fw-semibold);
+  color: var(--t-muted);
+}
+
+.fact dd {
+  color: var(--t-strong);
+  overflow-wrap: anywhere;
+}
+
+/* How to play (collapsible) */
+.howTo {
+  padding: 0 var(--s-5);
+}
+
+.howToSummary {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 56px;
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+  cursor: pointer;
+  list-style: none;
+}
+
+.howToSummary::-webkit-details-marker {
+  display: none;
+}
+
+.howToHint {
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-small);
+  color: var(--t-muted);
+}
+
+.howToSummary .chevron {
+  margin-left: auto;
+}
+
+.howToBody {
+  padding-bottom: var(--s-5);
+}
+
+/* Action bar: sticky at the bottom, always reachable. */
+.actionBar {
+  composes: paper from '../ui/Surface.module.css';
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: var(--z-sticky);
+  margin-top: var(--s-6);
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  border-width: var(--bw-strong);
+  box-shadow: var(--lip-lg);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  font-weight: var(--fw-semibold);
+  color: var(--t-strong);
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
   flex-shrink: 0;
-  background-color: var(--surface-raised);
-  color: var(--text);
-  border: 1px solid var(--border);
 }
 
-.secondaryButton:hover {
-  background-color: var(--border);
+/* Invite landing (name step) */
+.centered {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  padding: var(--s-8) var(--gutter);
 }
 
-.quitButton {
-  background-color: transparent;
-  color: #ff8a80;
-  border: 1px solid rgba(255, 138, 128, 0.4);
+.joinCard {
+  width: min(480px, 100%);
+  padding: var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
 }
 
-.quitButton:hover {
-  background-color: rgba(192, 57, 43, 0.15);
+.invite {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--c-mat);
+  color: var(--t-strong);
 }
 
-.error {
-  color: #ff6b6b;
+.invite strong {
+  font-weight: var(--fw-bold);
 }
 
-@media (max-width: 480px) {
-  /* Full-width buttons, the main action on top. */
-  .actions {
-    flex-direction: column-reverse;
+.inviteCount {
+  color: var(--t-muted);
+}
+
+.joinTitle {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+  line-height: 1.2;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+/* Phone & tablet: invite first, then the players, then the rules. */
+@media (max-width: 1023px) {
+  .frame {
+    display: flex;
+    flex-direction: column;
+    /* Full width: never sized by a long name. */
+    align-items: stretch;
+  }
+
+  .main {
+    display: contents;
+  }
+
+  .head {
+    order: 1;
+  }
+  .inviteArea {
+    order: 2;
+  }
+  .playersArea {
+    order: 3;
+  }
+  .rulesArea {
+    order: 4;
+  }
+  .howTo {
+    order: 5;
+  }
+}
+
+@media (max-width: 599px) {
+  .section {
+    padding: var(--s-4);
+  }
+
+  .inviteRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inviteButtons > * {
+    flex: 1;
+  }
+
+  .fact {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .actionBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .status {
+    justify-content: center;
+    text-align: center;
+    font-size: var(--fs-small);
+  }
+
+  .actionButtons > :last-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .actionButtons > button {
+    padding-inline: var(--s-3);
+    font-size: 0.9375rem;
+  }
+
+  /* Touch targets: 44px. */
+  .kick {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 359px) {
+  .quitText {
+    display: none;
   }
 }

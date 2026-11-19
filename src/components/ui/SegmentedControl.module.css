@@ -1,0 +1,79 @@
+.group {
+  border: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.legend {
+  margin-bottom: var(--s-2);
+  font-weight: var(--fw-semibold);
+  color: var(--t-strong);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+}
+
+/* The radio stays in the page (keyboard, screen readers), drawn by the pill. */
+.input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border: var(--bw) solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-paper);
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+  transition: background-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+
+.option:hover .pill {
+  border-color: var(--c-ink);
+}
+
+.input:checked + .pill {
+  border-color: var(--c-ink);
+  background: var(--c-blue);
+  color: var(--c-ink);
+  box-shadow: 0 3px 0 var(--c-ink);
+  transform: translateY(-1px);
+}
+
+.input:checked + .pill::before {
+  content: '✓';
+  margin-right: 6px;
+  font-weight: var(--fw-bold);
+}
+
+.input:focus-visible + .pill {
+  outline: 3px solid var(--focus-yellow);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 7px var(--c-ink);
+}
+
+.group:disabled .pill {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.group:disabled .input {
+  cursor: default;
+}

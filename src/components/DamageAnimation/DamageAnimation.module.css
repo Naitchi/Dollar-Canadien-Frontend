@@ -1,33 +1,43 @@
 .damage {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 24px;
+  justify-content: center;
+  gap: var(--s-6);
+  flex-wrap: wrap;
 }
 
 .score {
-  font-size: 2.6rem;
-  font-weight: 700;
-  animation: arrive 0.4s ease-out both;
+  font-size: 2.5rem;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  animation: arrive 0.4s var(--ease-out) both;
 }
 
 .total {
-  color: #ff8a80;
+  color: var(--t-danger);
 }
 
 .target {
-  color: var(--text-muted);
-  font-size: 1.6rem;
+  color: var(--t-muted);
+  font-size: 1.5rem;
 }
 
-/* Same look as the attack damage badge (AttackAnimation). */
+/* Same family as the attack damage badge. */
 .badge {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: white;
-  background-color: var(--damage);
-  padding: 0.5rem 1.25rem;
-  border-radius: 10px;
-  animation: hit 0.5s ease-out forwards;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 6px 18px;
+  border: var(--bw-strong) solid var(--c-ink);
+  border-radius: var(--r-lg);
+  background: var(--c-coral);
+  color: var(--c-ink);
+  font-size: 1.75rem;
+  font-weight: var(--fw-bold);
+  line-height: 1.1;
+  box-shadow: 0 5px 0 var(--c-ink);
+  animation: hit 0.5s var(--ease-spring) both;
 }
 
 @keyframes arrive {
@@ -43,18 +53,14 @@
 
 @keyframes hit {
   0% {
-    transform: scaleY(1) scaleX(1);
+    opacity: 0;
+    transform: scale(1.7) rotate(6deg);
   }
-  25% {
-    transform: scaleY(1.5) scaleX(0.8);
-  }
-  50% {
-    transform: scaleY(0.8) scaleX(1.5);
-  }
-  75% {
-    transform: scaleY(1.2) scaleX(1.2);
+  60% {
+    opacity: 1;
+    transform: scale(0.95) rotate(2deg);
   }
   100% {
-    transform: scaleY(1) scaleX(1);
+    transform: scale(1) rotate(2deg);
   }
 }

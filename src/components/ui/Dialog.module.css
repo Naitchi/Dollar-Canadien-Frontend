@@ -1,0 +1,92 @@
+.dialog {
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--t-body);
+  width: min(560px, calc(100vw - 2 * var(--gutter)));
+  max-height: calc(100dvh - 2 * var(--gutter));
+  overflow: visible;
+}
+
+.sm {
+  width: min(420px, calc(100vw - 2 * var(--gutter)));
+}
+
+.dialog::backdrop {
+  background: rgba(12, 24, 39, 0.72);
+}
+
+.dialog[open] .box {
+  animation: dialogIn 200ms var(--ease-spring);
+}
+
+.box {
+  composes: paper from './Surface.module.css';
+  border-width: var(--bw-strong);
+  box-shadow: var(--lip-lg);
+  max-height: calc(100dvh - 2 * var(--gutter) - 8px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-4) 0 var(--s-6);
+}
+
+.title {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+  line-height: 1.25;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: var(--bw) solid transparent;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--t-strong);
+}
+
+.close:hover {
+  background: var(--c-inset);
+  border-color: var(--c-line);
+}
+
+.body {
+  padding: var(--s-3) var(--s-6) var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  gap: var(--s-3);
+  padding: 0 var(--s-6) var(--s-6);
+}
+
+@media (max-width: 479px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}

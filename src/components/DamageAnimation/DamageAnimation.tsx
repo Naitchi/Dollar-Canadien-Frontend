@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { DAMAGE_ANIMATION_MS, DAMAGE_BADGE_DELAY_MS } from '@/constants/timings';
+
 // Components
 import Heart from '../Heart/Heart';
 
 // Styles
 import styles from './DamageAnimation.module.css';
-
-// Mirrored by DAMAGE_ANIMATION_MS in the backend (functions/turn.js): keep them in sync.
-const DURATION_MS = 2500;
-// The damage badge appears after the score has been shown for this long.
-const BADGE_DELAY_MS = 900;
 
 interface DamageAnimationProps {
   // Sum of the 6 locked dice, below 30.
@@ -21,7 +18,7 @@ interface DamageAnimationProps {
 
 // Shown in place of the dice when the locked dice add up to less than 30
 // (like AttackAnimation above 30): the score against the 30 to reach, then
-// the HP it costs.
+// the HP it costs. Durations mirrored by the backend (constants/timings.ts).
 const DamageAnimation: React.FC<DamageAnimationProps> = ({ score, onHit, onAnimationEnd }) => {
   const [showBadge, setShowBadge] = useState(false);
 
@@ -39,8 +36,8 @@ const DamageAnimation: React.FC<DamageAnimationProps> = ({ score, onHit, onAnima
       setTimeout(() => {
         setShowBadge(true);
         onHitRef.current?.();
-      }, BADGE_DELAY_MS),
-      setTimeout(() => onAnimationEndRef.current(), DURATION_MS),
+      }, DAMAGE_BADGE_DELAY_MS),
+      setTimeout(() => onAnimationEndRef.current(), DAMAGE_ANIMATION_MS),
     ];
     return () => timeouts.forEach(clearTimeout);
   }, []);
@@ -53,7 +50,7 @@ const DamageAnimation: React.FC<DamageAnimationProps> = ({ score, onHit, onAnima
       </p>
       {showBadge && (
         <div className={styles.badge}>
-          -{30 - score} <Heart hp={1} maxHp={30} />
+          <Heart hp={1} maxHp={30} size={24} />−{30 - score} PV
         </div>
       )}
     </div>

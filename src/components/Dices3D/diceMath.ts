@@ -56,12 +56,14 @@ export interface Slot {
 }
 
 /**
- * Where each die lands: in a row, left-aligned, like the old flat dice.
+ * Where each die lands: in a row, left-aligned like the old flat dice, or
+ * centred in the row when its width is given.
  *
  * @param {number} count - The number of dice.
  * @param {number} rowLeft - Left edge of the row, in stage pixels.
  * @param {number} rowCenterY - Vertical center of the row, in stage pixels.
  * @param {number} diePx - Size of a die, in pixels (the gap scales with it).
+ * @param {number} [rowWidth] - Width of the row: the dice are centred in it.
  * @returns {Slot[]} The center of each die.
  */
 export const slotsFor = (
@@ -69,10 +71,13 @@ export const slotsFor = (
   rowLeft: number,
   rowCenterY: number,
   diePx: number = DIE_PX,
+  rowWidth?: number,
 ): Slot[] => {
   const gap = (diePx * DIE_GAP_PX) / DIE_PX;
+  const diceWidth = count * diePx + Math.max(count - 1, 0) * gap;
+  const start = rowWidth === undefined ? rowLeft : rowLeft + Math.max((rowWidth - diceWidth) / 2, 0);
   return Array.from({ length: count }, (_, index) => ({
-    x: rowLeft + diePx / 2 + index * (diePx + gap),
+    x: start + diePx / 2 + index * (diePx + gap),
     y: rowCenterY,
   }));
 };

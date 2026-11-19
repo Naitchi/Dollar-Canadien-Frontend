@@ -1,12 +1,18 @@
 .heart {
   display: inline-block;
-  color: pink;
-  /* animation-duration is set inline, from the player's HP */
-  animation: heartbeat 1.3s ease-in-out infinite;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* animation-duration and -iteration-count are set inline, from the HP */
+.beating {
+  animation-name: heartbeat;
+  animation-timing-function: ease-in-out;
 }
 
 .broken {
   display: inline-block;
+  line-height: 1;
 }
 
 /* "Lub-dub": two quick beats, then a rest. */
@@ -25,11 +31,5 @@
   }
   70% {
     transform: scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .heart {
-    animation: none;
   }
 }

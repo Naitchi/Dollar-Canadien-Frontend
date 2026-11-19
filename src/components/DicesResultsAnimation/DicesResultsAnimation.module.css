@@ -1,178 +1,186 @@
-/* TODO jai un bug quand jai l'animation -> jai la barre de scroll horizontal qui apparait */
+/* Fixed over the viewport: never off-screen, never a horizontal scrollbar. */
 .block {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-effects);
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  pointer-events: none;
+  background: transparent;
+  transition: background-color 300ms ease;
+}
+
+.dim {
+  background: rgba(12, 24, 39, 0.6);
+}
+
+.card {
+  composes: board from '../ui/Surface.module.css';
+  width: min(560px, 100%);
+  padding: var(--s-5) var(--s-5) var(--s-6);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  gap: var(--s-4);
+  animation: cardIn 600ms var(--ease-spring) both;
 }
 
-.redRectangle {
-  position: absolute;
-  transform: translateY(-50%); /* Pour centrer en comprenant la hauteur de la div */
-  width: 100%;
-  height: 100px;
-  background-color: rgb(145, 8, 8);
-  animation: slideInFromLeft 0.7s ease-out forwards;
+.slideOut {
+  animation: cardOut 600ms ease-in forwards;
+}
 
+.name {
+  composes: labelOnPaper from '../ui/Surface.module.css';
+  font-size: 0.875rem;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: 96px;
+  display: grid;
+  place-items: center;
+}
+
+.dice {
   display: flex;
   justify-content: center;
-  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: nowrap;
 }
 
-.redRectangle.slideOut {
-  animation: slideOutFromRight 0.7s ease-out forwards;
+.die {
+  display: block;
+  animation: dieIn 420ms calc(var(--i) * 70ms) var(--ease-spring) both;
 }
 
-.text {
-  width: 100%;
-  gap: 40px;
-  font-size: 60px;
-  font-weight: bold;
-  z-index: 2;
-  animation: slideInFromRight 0.7s ease-out forwards;
+/* The dice gather into the middle, where the total appears. */
+.merge .die {
+  animation: dieMerge 650ms ease-in forwards;
+  --shift: calc((2.5 - var(--i)) * 58px);
+}
 
+.total {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-items: baseline;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-6);
+  border: var(--bw-strong) solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-yellow);
+  color: var(--c-ink);
+  box-shadow: 0 5px 0 var(--c-yellow-deep);
+  animation: totalIn 650ms var(--ease-spring) both;
 }
 
-@keyframes bounceMove {
-  0% {
-    transform: translateX(0);
+.totalValue {
+  font-size: 3.5rem;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+.totalTarget {
+  font-size: 1.25rem;
+  font-weight: var(--fw-bold);
+}
+
+.verdictSlot {
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+}
+
+.verdict {
+  padding: var(--s-2) var(--s-5);
+  border: var(--bw-strong) solid var(--c-ink);
+  border-radius: var(--r-md);
+  color: var(--c-ink);
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  box-shadow: 0 4px 0 var(--c-ink);
+  animation: stamp 500ms var(--ease-spring) both;
+}
+
+.attack {
+  background: var(--c-blue);
+}
+
+.even {
+  background: var(--c-green);
+}
+
+.ouch {
+  background: var(--c-coral);
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.92);
   }
-  30% {
-    transform: translateX(calc(var(--final-pos) * -0.15 * 1px));
+}
+
+@keyframes cardOut {
+  to {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
   }
-  100% {
-    transform: translateX(calc(var(--final-pos) * 1px));
+}
+
+@keyframes dieIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) rotate(-40deg);
   }
 }
 
-.number.test:nth-child(1) {
-  --final-pos: 185;
-  animation: bounceMove 0.7s ease forwards;
-}
-.number.test:nth-child(2) {
-  --final-pos: 110;
-  animation: bounceMove 0.7s ease forwards;
-}
-.number.test:nth-child(3) {
-  --final-pos: 40;
-  animation: bounceMove 0.7s ease forwards;
-}
-.number.test:nth-child(4) {
-  --final-pos: -40;
-  animation: bounceMove 0.7s ease forwards;
-}
-.number.test:nth-child(5) {
-  --final-pos: -110;
-  animation: bounceMove 0.7s ease forwards;
-}
-.number.test:nth-child(6) {
-  --final-pos: -185;
-  animation: bounceMove 0.7s ease forwards;
+@keyframes dieMerge {
+  to {
+    opacity: 0;
+    transform: translateX(var(--shift)) scale(0.4);
+  }
 }
 
-.bounce {
-  font-size: 60px;
-  font-weight: bold;
-  animation: bounceAnimation 0.7s ease-out forwards;
+@keyframes totalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
 }
 
-@keyframes grow {
+@keyframes stamp {
   0% {
     opacity: 0;
-    transform: translateY(-70px);
+    transform: scale(1.8) rotate(-10deg);
   }
-  33% {
+  60% {
     opacity: 1;
-    transform: translateY(-70px);
+    transform: scale(0.95) rotate(-4deg);
   }
   100% {
-    opacity: 1;
-    transform: translateY(0px);
+    transform: scale(1) rotate(-4deg);
   }
 }
 
-.crown {
-  position: absolute;
-  top: -25%;
-  left: 47.7%;
-  font-size: 40px;
-  animation: grow 0.5s ease-out forwards;
-}
+@media (max-width: 479px) {
+  .die svg {
+    width: 44px;
+    height: 44px;
+  }
 
-@keyframes drop {
-  0% {
-    opacity: 0;
-    transform: translateY(-70px);
+  .merge .die {
+    --shift: calc((2.5 - var(--i)) * 50px);
   }
-  33% {
-    opacity: 1;
-    transform: translateY(-50px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(0px);
+
+  .totalValue {
+    font-size: 2.75rem;
   }
 }
 
-.drop {
-  position: absolute;
-  top: 48%;
-  left: 51%;
-  font-size: 40px;
-  animation: drop 1s ease-out forwards;
-}
-
-@keyframes bounceAnimation {
-  0% {
-    transform: scaleY(1) scaleX(1);
-  }
-  25% {
-    transform: scaleY(1.5) scaleX(0.8);
-  }
-  50% {
-    transform: scaleY(0.8) scaleX(1.5);
-  }
-  75% {
-    transform: scaleY(1.2) scaleX(1.2);
-  }
-  100% {
-    transform: scaleY(1) scaleX(1);
-  }
-}
-
-@keyframes slideInFromLeft {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOutFromRight {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(100%);
+@media (max-width: 359px) {
+  .die svg {
+    width: 38px;
+    height: 38px;
   }
 }

@@ -2,19 +2,30 @@
 .confetti {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: var(--z-effects);
   pointer-events: none;
   overflow: hidden;
 }
 
 .piece {
   position: absolute;
-  top: -20px;
+  top: -24px;
   border-radius: 2px;
   opacity: 0;
   animation-name: fall;
   animation-timing-function: linear;
-  animation-iteration-count: 2;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+/* Maple leaf shape (same outline as the logo). */
+.leaf {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 2%, 57% 15%, 66% 10%, 63% 32%, 77% 18%, 80% 26%, 94% 23%, 89% 39%, 97% 43%,
+    73% 61%, 77% 70%, 53% 67%, 53% 95%, 47% 95%, 47% 67%, 23% 70%, 27% 61%, 3% 43%,
+    11% 39%, 6% 23%, 20% 26%, 23% 18%, 37% 32%, 34% 10%, 43% 15%
+  );
 }
 
 @keyframes fall {
@@ -22,12 +33,12 @@
     opacity: 1;
     transform: translate3d(0, 0, 0) rotate(var(--rotate));
   }
-  90% {
+  85% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate3d(var(--drift), 105vh, 0) rotate(calc(var(--rotate) + 720deg));
+    transform: translate3d(var(--drift), 105vh, 0) rotate(calc(var(--rotate) + 540deg));
   }
 }
 

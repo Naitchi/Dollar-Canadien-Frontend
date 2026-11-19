@@ -1,189 +1,293 @@
-/* Floating in the bottom-right corner, over the game (and its red low-HP edges). */
-.chat {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 60;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-}
-
+/* Header button */
 .toggle {
   position: relative;
-  width: 56px;
-  height: 56px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background-color: var(--surface-raised);
-  font-size: 1.5rem;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 44px;
+  padding: 0 var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-chip);
+  color: var(--t-on-dark);
+  font-weight: var(--fw-bold);
+  box-shadow: 0 3px 0 var(--c-chrome-edge);
 }
 
-.toggle:hover {
-  transform: translateY(-2px);
+.toggle:hover,
+.toggle[aria-expanded='true'] {
+  background: var(--c-chip-strong);
 }
 
-/* Unread messages. */
 .badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: -8px;
+  right: -8px;
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
-  border-radius: 999px;
-  background-color: var(--danger);
-  color: white;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-red);
+  color: var(--c-ink);
   font-size: 0.75rem;
-  font-weight: 700;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: var(--fw-bold);
+  display: grid;
+  place-items: center;
 }
 
+/* Panel (desktop): over the player sidebar, never over the dice or the
+   main button (which stay focusable). */
 .panel {
-  width: 340px;
-  height: 440px;
-  max-height: calc(100vh - 120px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background-color: var(--surface);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  overflow: hidden;
-
+  composes: paper from '../ui/Surface.module.css';
+  position: fixed;
+  z-index: var(--z-chat);
+  top: calc(var(--header-h) + env(safe-area-inset-top) + 16px);
+  left: max(var(--gutter), calc((100vw - var(--container)) / 2 + var(--gutter)));
+  width: var(--sidebar);
+  height: min(560px, calc(100dvh - var(--header-h) - 40px));
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border-width: var(--bw-strong);
+  box-shadow: var(--lip-lg);
+  animation: panelIn 200ms var(--ease-out);
 }
 
 .header {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-4);
+  background: var(--c-chrome);
+  color: var(--t-on-dark);
 }
 
 .title {
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
 }
 
 .close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   border: none;
-  background: none;
-  color: var(--text-muted);
-  font-size: 1rem;
-  cursor: pointer;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--t-on-dark);
+}
+
+.close:hover {
+  background: var(--c-chip);
 }
 
 .messages {
   flex: 1;
   overflow-y: auto;
   list-style: none;
-  padding: 12px;
-
+  padding: var(--s-3);
+  background: var(--c-paper-alt);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
 }
 
 .empty {
-  margin: auto 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  margin: auto;
+  max-width: 28ch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
   text-align: center;
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+}
+
+.emptyIcon {
+  font-size: 2rem;
+}
+
+.emptyHint {
+  color: var(--t-muted);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-regular);
 }
 
 .message {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-2);
+  max-width: 88%;
   align-self: flex-start;
-  max-width: 85%;
-  padding: 8px 10px;
-  border-radius: 10px;
-  background-color: var(--surface-raised);
-  overflow-wrap: anywhere;
+}
 
+.mine {
+  align-self: flex-end;
+}
+
+.avatar {
+  margin-bottom: 2px;
+}
+
+.bubble {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: var(--s-2) var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md) var(--r-md) var(--r-md) 4px;
+  background: var(--c-paper);
+  color: var(--t-strong);
+  overflow-wrap: anywhere;
 }
 
-/* Our own messages, on the right. */
-.mine {
-  align-self: flex-end;
-  background-color: rgba(0, 112, 243, 0.25);
+.mine .bubble {
+  border-radius: var(--r-md) var(--r-md) 4px var(--r-md);
+  background: var(--c-blue-tint);
 }
 
 .author {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+  color: var(--t-strong);
+}
+
+.text {
+  line-height: 1.4;
 }
 
 .time {
   align-self: flex-end;
-  font-size: 0.7rem;
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  color: var(--t-muted);
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3) 0;
+  border-top: var(--bw) solid var(--c-inset-strong);
+}
+
+.quickReply {
+  flex-shrink: 0;
+  min-height: 40px;
+  min-width: 44px;
+  padding: 0 var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-paper);
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+}
+
+.quickReply:hover {
+  background: var(--c-yellow);
 }
 
 .form {
-  padding: 12px;
-  border-top: 1px solid var(--border);
-
   display: flex;
-  gap: 8px;
+  gap: var(--s-2);
+  padding: var(--s-3);
 }
 
 .input {
+  composes: input from '../ui/Surface.module.css';
   flex: 1;
-  min-width: 0;
-  padding: 0.55rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background-color: var(--bg);
-  color: var(--text);
+  min-height: 44px;
 }
 
 .send {
-  padding: 0.55rem 1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: var(--primary);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  min-height: 44px;
+  flex-shrink: 0;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-blue);
+  color: var(--c-ink);
+  box-shadow: 0 3px 0 var(--c-blue-deep);
 }
 
-.send:disabled {
-  opacity: 0.5;
+.send[aria-disabled='true'] {
+  background: var(--c-inset-strong);
+  border-style: dashed;
+  box-shadow: none;
   cursor: not-allowed;
 }
 
 .hint {
-  padding: 12px;
-  border-top: 1px solid var(--border);
-  color: var(--text-muted);
+  padding: var(--s-3) var(--s-4);
+  border-top: var(--bw) solid var(--c-inset-strong);
+  color: var(--t-muted);
   text-align: center;
 }
 
 .error {
-  padding: 0 12px 12px;
-  color: #ff6b6b;
-  font-size: 0.85rem;
+  padding: 0 var(--s-4) var(--s-3);
+  color: var(--t-danger);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
 }
 
-@media (max-width: 480px) {
-  .chat {
-    right: 12px;
-    bottom: 12px;
+@media (max-width: 599px) {
+  .toggleText {
+    display: none;
   }
 
+  .toggle {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+/* Phone & tablet: a bottom sheet, at most half the screen. */
+@media (max-width: 1023px) {
   .panel {
-    width: calc(100vw - 24px);
-    height: 60vh;
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: auto;
+    height: 50dvh;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    border-width: var(--bw-strong) 0 0;
+    box-shadow: 0 -4px 0 var(--c-ink);
+    padding-bottom: env(safe-area-inset-bottom);
+    animation-name: sheetIn;
+  }
+}
+
+/* Landscape phones: the sheet takes the height under the header, and the
+   quick replies make room for the messages. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .panel {
+    height: calc(100dvh - var(--header-h) - 8px);
+  }
+
+  .quick {
+    display: none;
+  }
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(100%);
   }
 }

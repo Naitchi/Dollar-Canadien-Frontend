@@ -1,4 +1,4 @@
-/* Covers the whole "Dés lancés" box: the dice are thrown from its far end. */
+/* Covers the whole mat: the dice are thrown from its far end. */
 .stage {
   position: absolute;
   inset: 0;
@@ -20,66 +20,107 @@
   position: absolute;
   padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 22%;
   background: transparent;
   pointer-events: auto;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-bottom 0.2s ease;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s ease;
 }
 
 .die:enabled {
   cursor: pointer;
 }
 
-.die:focus-visible {
-  outline: 3px solid #ffd54f;
-  outline-offset: 2px;
+@media (hover: hover) {
+  .die:enabled:not(.selected):hover {
+    box-shadow: 0 0 0 3px rgba(30, 91, 164, 0.45);
+  }
 }
 
-/* Same marker as the old flat dice had; the 3D die rises by the same 5px. */
+/* Selected: lifted like the 3D die (same, size-relative amount), a blue ring
+   and a ✓ badge — never yellow (yellow is the focus ring). */
 .selected {
-  transform: translateY(-5px);
-  border-bottom: 3px solid #ff0000;
+  transform: translateY(calc(-1 * var(--lift, 5px)));
+  box-shadow: 0 0 0 3px var(--c-blue-deep);
 }
 
-/* A die hitting the attack number: raised (like the 3D die, 10px) and glowing red. */
-.hit {
-  transform: translateY(-10px);
+/* Focused AND selected: the blue ring stays, inside the focus ring
+   (blue | ink | yellow | ink). */
+.selected:focus-visible {
   box-shadow:
-    0 0 0 3px rgba(255, 90, 90, 0.9),
-    0 0 22px rgba(255, 0, 0, 0.7);
-  animation: hitGlow 0.8s ease-in-out infinite alternate;
+    0 0 0 3px var(--c-blue-deep),
+    0 0 0 10px var(--c-ink) !important;
+  outline-offset: 5px !important;
+}
+
+.check {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: 50%;
+  background: var(--c-green);
+  color: var(--c-ink);
+  font-size: 0.8125rem;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  animation: checkIn 220ms var(--ease-spring) both;
+}
+
+/* A die hitting the attack number: raised (like the 3D die) with a coral
+   ring and a short glow (limited, not endless). */
+.hit {
+  transform: translateY(calc(-1 * var(--hit-lift, 10px)));
+  box-shadow:
+    0 0 0 3px var(--c-ink),
+    0 0 0 7px var(--c-coral);
+  animation: hitGlow 0.7s ease-in-out 3 alternate;
 }
 
 @keyframes hitGlow {
-  from {
-    box-shadow:
-      0 0 0 3px rgba(255, 90, 90, 0.9),
-      0 0 12px rgba(255, 0, 0, 0.5);
-  }
   to {
     box-shadow:
-      0 0 0 3px rgba(255, 90, 90, 1),
-      0 0 28px rgba(255, 0, 0, 0.9);
+      0 0 0 3px var(--c-ink),
+      0 0 0 9px var(--c-coral),
+      0 0 24px 6px rgba(255, 118, 117, 0.7);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@keyframes checkIn {
+  from {
+    transform: scale(0);
+  }
+}
+
+/* Phones: the mat has little padding and clips its content (overflow:
+   hidden), so the rings and the badge stay tighter to the dice. */
+@media (max-width: 599px) {
   .hit {
+    box-shadow:
+      0 0 0 2px var(--c-ink),
+      0 0 0 5px var(--c-coral);
     animation: none;
   }
+
+  .check {
+    top: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    font-size: 0.6875rem;
+  }
 }
 
-/* Fallback without WebGL: the old flat dice. */
+/* Fallback without WebGL: the flat dice of the rest of the interface. */
 .flat {
-  /* font-size is set inline, from the die size */
-  background-color: whitesmoke;
-  color: black;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: transparent;
 }
 
-.flat.selected {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.flat svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }

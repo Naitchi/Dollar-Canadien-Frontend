@@ -1,0 +1,84 @@
+.root {
+  position: relative;
+}
+
+.trigger {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-chip);
+  color: var(--t-on-dark);
+  box-shadow: 0 3px 0 var(--c-chrome-edge);
+}
+
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  background: var(--c-chip-strong);
+}
+
+.menu {
+  composes: paper from '../ui/Surface.module.css';
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: var(--z-header);
+  min-width: 240px;
+  padding: var(--s-2);
+  animation: menuIn 160ms var(--ease-out);
+}
+
+.menu[hidden] {
+  display: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--t-strong);
+  font-weight: var(--fw-semibold);
+  text-align: left;
+}
+
+.item:hover {
+  background: var(--c-inset);
+}
+
+.switch {
+  margin-left: auto;
+  min-width: 46px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--c-ink);
+  border-radius: var(--r-pill);
+  background: var(--c-inset-strong);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-bold);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.on {
+  background: var(--c-green);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}

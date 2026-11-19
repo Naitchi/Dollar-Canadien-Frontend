@@ -1,34 +1,155 @@
-.player {
-  width: 130px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  background-color: var(--surface-raised);
-
+/* The reference's player card: paper, ink outline, solid lip; "me" in green,
+   danger in pale yellow with a coral edge. */
+.card {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: var(--s-3);
+  min-width: 0;
+  padding: var(--s-3);
+  border: var(--bw) solid var(--c-ink);
+  border-radius: var(--r-md);
+  background: var(--c-paper-alt);
+  color: var(--t-strong);
+  box-shadow: 0 3px 0 var(--c-ink);
+}
+
+.compact {
+  padding: var(--s-2) var(--s-3);
+  gap: var(--s-2);
+}
+
+.me {
+  background: var(--c-paper);
+  border-color: var(--c-green);
+  border-width: var(--bw-strong);
+  box-shadow: 0 4px 0 var(--c-green-deep);
+}
+
+/* Whose turn: a blue ring around the card, plus the JOUE badge. */
+.active {
+  outline: 3px solid var(--c-blue);
+  outline-offset: 2px;
+}
+
+.danger {
+  background: var(--c-danger-fill);
+  border-color: var(--c-coral);
+  box-shadow: 0 4px 0 var(--c-orange-deep);
 }
 
 .dead {
-  opacity: 0.5;
+  background: var(--c-inset);
+  border-style: dashed;
+  border-color: var(--c-line-strong);
+  box-shadow: none;
+  color: var(--t-muted);
 }
 
-.avatar {
-  font-size: 1.4rem;
+.hit {
+  animation: hit 520ms ease-in-out;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
 }
 
 .name {
-  max-width: 100%;
-  font-weight: 700;
-  white-space: nowrap;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--fw-bold);
+  font-size: 1.0625rem;
+  line-height: 1.25;
+}
+
+.compact .name {
+  font-size: var(--fs-body);
+}
+
+.badges {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.hpRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .hp {
-  font-weight: 700;
+  flex-shrink: 0;
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.hpValue {
+  display: inline-block;
+  min-width: 2.2ch;
+  text-align: right;
+}
+
+.hpUnit {
+  font-size: var(--fs-small);
+  color: var(--t-muted);
+}
+
+.danger .hpValue {
+  color: var(--t-danger);
+}
+
+.status {
+  margin-left: auto;
+}
+
+.lastTurn {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--t-muted);
+  white-space: nowrap;
+}
+
+.action {
+  flex-shrink: 0;
+}
+
+@keyframes hit {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px) rotate(-1deg);
+  }
+  40% {
+    transform: translateX(6px) rotate(1deg);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* Reduced motion: a static red edge instead of a shake. */
+@media (prefers-reduced-motion: reduce) {
+  .hit {
+    border-color: var(--t-danger);
+  }
 }
